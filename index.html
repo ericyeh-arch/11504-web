@@ -3,22 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>11504 電話資料管理</title>
+  <title>11504 行政與教學分機表</title>
   <style>
     :root {
       color-scheme: light;
-      --bg: #f5f7f6;
-      --panel: #ffffff;
-      --ink: #17211d;
-      --muted: #66736d;
-      --line: #dce4df;
-      --strong: #0b5d4d;
-      --strong-2: #0f7663;
+      --bg: #f4f6f8;
+      --surface: #ffffff;
+      --surface-2: #f9fbfb;
+      --ink: #17211f;
+      --muted: #64716d;
+      --line: #d9e2df;
+      --admin: #0b6757;
+      --teach: #365f9c;
+      --active: #0b6757;
+      --active-soft: #e7f3ef;
       --danger: #b42318;
-      --danger-bg: #fff1f0;
-      --soft: #eaf3ef;
-      --focus: #2a8f7a;
-      --shadow: 0 16px 40px rgba(21, 35, 31, .08);
+      --danger-soft: #fff0ed;
+      --shadow: 0 18px 44px rgba(25, 39, 36, .08);
     }
 
     * { box-sizing: border-box; }
@@ -31,299 +32,167 @@
       font-size: 15px;
     }
 
-    .app {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 24px;
-    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
 
-    header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
+    .app { max-width: 1360px; margin: 0 auto; padding: 22px; }
 
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      line-height: 1.2;
-      letter-spacing: 0;
-    }
-
-    .subtitle {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .summary {
+    .masthead {
       display: grid;
-      grid-template-columns: repeat(3, minmax(110px, 1fr));
-      gap: 8px;
-      min-width: 330px;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 16px;
     }
 
+    h1 { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: 0; }
+    .subtitle { color: var(--muted); margin-top: 6px; font-size: 14px; }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(104px, 1fr)); gap: 8px; }
     .metric {
-      background: var(--panel);
+      background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px 12px;
-      box-shadow: 0 6px 18px rgba(21, 35, 31, .04);
+      box-shadow: 0 8px 22px rgba(25, 39, 36, .04);
     }
+    .metric span { display: block; color: var(--muted); font-size: 12px; }
+    .metric strong { display: block; margin-top: 2px; font-size: 20px; }
 
-    .metric span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .metric strong {
-      display: block;
-      margin-top: 2px;
-      font-size: 20px;
-    }
-
-    .layout {
+    .tabs {
       display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 16px;
-      align-items: start;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
     }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-    }
-
-    .form-panel {
-      padding: 16px;
-      position: sticky;
-      top: 16px;
-    }
-
-    .panel-title {
+    .tab {
+      min-height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
-      gap: 12px;
+      gap: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      text-align: left;
+      box-shadow: 0 8px 22px rgba(25, 39, 36, .04);
     }
+    .tab[aria-selected="true"] { border-color: var(--active); background: var(--active-soft); }
+    .tab-title { display: block; font-weight: 800; font-size: 17px; }
+    .tab-sub { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .tab-count { font-size: 24px; font-weight: 850; }
 
-    h2 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.3;
-    }
+    .workspace { display: grid; grid-template-columns: 350px 1fr; gap: 16px; align-items: start; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+    .form-panel { padding: 16px; position: sticky; top: 16px; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    h2 { margin: 0; font-size: 18px; line-height: 1.3; }
+    .mode { color: var(--muted); font-size: 13px; }
 
-    label {
-      display: block;
-      margin: 12px 0 6px;
-      color: #2d3934;
-      font-weight: 650;
-      font-size: 13px;
-    }
-
-    input, textarea, select {
+    label { display: block; margin: 12px 0 6px; color: #2e3a36; font-size: 13px; font-weight: 700; }
+    input, select, textarea {
       width: 100%;
       min-height: 40px;
-      border: 1px solid #cbd8d2;
+      border: 1px solid #c8d5d1;
       border-radius: 6px;
-      padding: 9px 10px;
-      color: var(--ink);
       background: #fff;
-      font: inherit;
+      color: var(--ink);
+      padding: 9px 10px;
       outline: none;
     }
+    textarea { min-height: 76px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--active); box-shadow: 0 0 0 3px rgba(11, 103, 87, .15); }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 
-    textarea {
-      resize: vertical;
-      min-height: 76px;
-    }
+    .btn { min-height: 38px; border: 1px solid transparent; border-radius: 6px; padding: 8px 12px; font-weight: 800; background: #fff; color: var(--ink); white-space: nowrap; }
+    .primary { background: var(--active); color: #fff; }
+    .primary:hover { filter: brightness(1.08); }
+    .secondary { border-color: #c9d8d4; }
+    .secondary:hover { background: #edf4f2; }
+    .danger { color: var(--danger); border-color: #ffd0ca; background: var(--danger-soft); }
 
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--focus);
-      box-shadow: 0 0 0 3px rgba(42, 143, 122, .15);
-    }
+    .table-panel { overflow: hidden; }
+    .toolbar { display: grid; grid-template-columns: 1fr 180px 150px 118px; gap: 10px; padding: 14px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+    .table-wrap { overflow: auto; max-height: calc(100vh - 282px); }
+    table { width: 100%; min-width: 860px; border-collapse: collapse; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+    th { position: sticky; top: 0; z-index: 1; background: #eef4f2; color: #273632; font-size: 13px; }
+    tbody tr:hover { background: #f8fbfa; }
+    .pill { display: inline-flex; align-items: center; max-width: 160px; min-height: 24px; padding: 3px 9px; border-radius: 999px; font-size: 12px; color: #173e37; background: #e7f3ef; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pill.teach { color: #24456f; background: #eaf0fa; }
+    .phone { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 800; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .row-actions { display: flex; justify-content: flex-end; gap: 6px; }
+    .row-actions .btn { min-height: 32px; padding: 6px 9px; font-size: 13px; }
+    .empty { padding: 38px 20px; text-align: center; color: var(--muted); }
 
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      min-height: 38px;
-      border: 1px solid transparent;
-      border-radius: 6px;
-      padding: 8px 12px;
-      font: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      background: #fff;
-      color: var(--ink);
-      white-space: nowrap;
-    }
-
-    .primary {
-      background: var(--strong);
-      color: #fff;
-    }
-
-    .primary:hover { background: var(--strong-2); }
-    .secondary { border-color: #c9d8d1; }
-    .secondary:hover { background: var(--soft); }
-    .danger {
-      color: var(--danger);
-      border-color: #ffd0cb;
-      background: var(--danger-bg);
-    }
-
-    .table-panel {
-      overflow: hidden;
-    }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: 1fr 190px 120px;
-      gap: 10px;
-      padding: 14px;
-      border-bottom: 1px solid var(--line);
-      background: #fbfcfb;
-    }
-
-    .table-wrap {
-      overflow: auto;
-      max-height: calc(100vh - 210px);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 760px;
-    }
-
-    th, td {
-      padding: 11px 12px;
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: middle;
-    }
-
-    th {
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      background: #eef5f1;
-      color: #273630;
-      font-size: 13px;
-    }
-
-    tbody tr:hover { background: #f8fbf9; }
-
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      max-width: 180px;
-      min-height: 24px;
-      border-radius: 999px;
-      padding: 3px 9px;
-      background: var(--soft);
-      color: #17463b;
-      font-size: 12px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .number {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-weight: 700;
-    }
-
-    .table-actions {
-      display: flex;
-      gap: 6px;
-      justify-content: flex-end;
-    }
-
-    .table-actions button {
-      min-height: 32px;
-      padding: 6px 9px;
-      font-size: 13px;
-    }
-
-    .empty {
-      padding: 36px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    @media (max-width: 920px) {
+    @media (max-width: 980px) {
       .app { padding: 16px; }
-      header {
-        align-items: stretch;
-        flex-direction: column;
-      }
-      .summary { min-width: 0; }
-      .layout { grid-template-columns: 1fr; }
+      .masthead { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .workspace { grid-template-columns: 1fr; }
       .form-panel { position: static; }
-      .toolbar { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr 1fr; }
       .table-wrap { max-height: none; }
     }
-
-    @media (max-width: 560px) {
-      .summary { grid-template-columns: 1fr; }
-      .row { grid-template-columns: 1fr; }
+    @media (max-width: 640px) {
       h1 { font-size: 24px; }
+      .tabs, .metrics, .toolbar, .two { grid-template-columns: 1fr; }
+      .tab { min-height: 64px; }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <header>
+    <header class="masthead">
       <div>
-        <h1>11504 電話資料管理</h1>
-        <div class="subtitle">依桌面 11504.pdf 建立，可查詢、新增、修改、刪除。資料儲存在此瀏覽器。</div>
+        <h1>11504 行政與教學分機表</h1>
+        <div class="subtitle">依 11504.pdf 重新整理為行政單位與教學單位兩區，可查詢、新增、修改、刪除。</div>
       </div>
-      <section class="summary" aria-label="資料統計">
-        <div class="metric"><span>目前筆數</span><strong id="totalCount">0</strong></div>
-        <div class="metric"><span>符合查詢</span><strong id="matchCount">0</strong></div>
-        <div class="metric"><span>單位數</span><strong id="deptCount">0</strong></div>
+      <section class="metrics" aria-label="資料統計">
+        <div class="metric"><span>全部資料</span><strong id="totalCount">0</strong></div>
+        <div class="metric"><span>行政單位</span><strong id="adminCount">0</strong></div>
+        <div class="metric"><span>教學單位</span><strong id="teachCount">0</strong></div>
+        <div class="metric"><span>目前顯示</span><strong id="matchCount">0</strong></div>
       </section>
     </header>
 
-    <section class="layout">
+    <nav class="tabs" aria-label="分機表分類">
+      <button class="tab" type="button" data-category="行政單位" aria-selected="true">
+        <span><span class="tab-title">行政單位</span><span class="tab-sub">校長室、處室、中心、場館行政</span></span>
+        <span class="tab-count" id="adminTabCount">0</span>
+      </button>
+      <button class="tab" type="button" data-category="教學單位" aria-selected="false">
+        <span><span class="tab-title">教學單位</span><span class="tab-sub">學院、學系、研究所、教師研究室</span></span>
+        <span class="tab-count" id="teachTabCount">0</span>
+      </button>
+    </nav>
+
+    <section class="workspace">
       <form class="panel form-panel" id="recordForm">
-        <div class="panel-title">
-          <h2 id="formTitle">新增資料</h2>
-          <span class="muted" id="editHint">新增模式</span>
+        <div class="panel-head">
+          <h2 id="formTitle">新增分機</h2>
+          <span class="mode" id="formMode">行政單位</span>
         </div>
         <input type="hidden" id="recordId">
 
-        <label for="department">單位 / 分類</label>
-        <input id="department" list="departmentOptions" required placeholder="例如：校長室、教務處">
-        <datalist id="departmentOptions"></datalist>
+        <label for="category">分類</label>
+        <select id="category" required>
+          <option value="行政單位">行政單位</option>
+          <option value="教學單位">教學單位</option>
+        </select>
+
+        <label for="unit">單位 / 群組</label>
+        <input id="unit" list="unitOptions" required placeholder="例如：教務處、體育學院">
+        <datalist id="unitOptions"></datalist>
 
         <label for="name">姓名 / 職掌名稱</label>
-        <input id="name" required placeholder="例如：邱炳坤校長、服務專線">
+        <input id="name" required placeholder="例如：服務專線、系主任、承辦人">
 
-        <div class="row">
+        <div class="two">
           <div>
             <label for="phone">分機 / 電話</label>
             <input id="phone" required placeholder="例如：1608 或 328-1755">
@@ -335,28 +204,32 @@
         </div>
 
         <label for="note">備註</label>
-        <textarea id="note" placeholder="可填樓層、承辦範圍或其他說明"></textarea>
+        <textarea id="note" placeholder="可填樓層、承辦範圍、原 PDF 座標或其他補充"></textarea>
 
         <div class="actions">
-          <button class="primary" type="submit" id="saveButton">新增</button>
-          <button class="secondary" type="button" id="clearButton">清除</button>
-          <button class="danger" type="button" id="resetButton">還原 PDF 初始資料</button>
+          <button class="btn primary" type="submit" id="saveButton">新增</button>
+          <button class="btn secondary" type="button" id="clearButton">清除</button>
+          <button class="btn danger" type="button" id="resetButton">還原初始資料</button>
         </div>
       </form>
 
       <section class="panel table-panel">
         <div class="toolbar">
-          <input id="searchInput" type="search" placeholder="查詢單位、姓名、分機、電話、備註">
-          <select id="departmentFilter" aria-label="依單位篩選">
-            <option value="">全部單位</option>
+          <input id="searchInput" type="search" placeholder="查詢姓名、職掌、分機、電話、單位、備註">
+          <select id="unitFilter" aria-label="依單位篩選"><option value="">全部群組</option></select>
+          <select id="sortSelect" aria-label="排序">
+            <option value="source">依 PDF 順序</option>
+            <option value="name">依名稱</option>
+            <option value="phone">依分機</option>
           </select>
-          <button class="secondary" type="button" id="exportButton">匯出 JSON</button>
+          <button class="btn secondary" type="button" id="exportButton">匯出 JSON</button>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>單位 / 分類</th>
+                <th>分類</th>
+                <th>單位 / 群組</th>
                 <th>姓名 / 職掌名稱</th>
                 <th>分機 / 電話</th>
                 <th>來源</th>
@@ -373,281 +246,176 @@
   </main>
 
   <script>
-    const STORAGE_KEY = "ntsu-11504-phone-records";
-    const seedCsv = `校長室|專線電話|328-1755|PDF 第1頁
-校長室|邱炳坤校長|1608|PDF 第1頁
-校長室|校長室|1610|PDF 第1頁
-校長室|黃明麗|1619|PDF 第1頁
-副校長室|黃東治副校長|1606|PDF 第1頁
-副校長室|陳國儀副校長|1688|PDF 第1頁
-副校長室|黃錫秋|1658|PDF 第1頁
-秘書室|陳成業主任秘書|1616|PDF 第1頁
-秘書室|郭婉伶專門委員|1614|PDF 第1頁
-秘書室|許玉釵|1615|PDF 第1頁
-秘書室|呂紹源|1617|PDF 第1頁
-秘書室|黃織錦|1662|PDF 第1頁
-學生事務處|湯惠婷學務長|1509|PDF 第1頁
-學生事務處|學務處辦公室|1512|PDF 第1頁
-學生事務處|楊孟容主任|1301|PDF 第1頁
-學生事務處|游韻如|1302|PDF 第1頁
-學生事務處|劉逸晉|1303|PDF 第1頁
-學生事務處|蘇偉誠|1307|PDF 第1頁
-學生事務處|宿舍管理中心|6111|PDF 第1頁
-學生事務處|校安專線|0965-000501|PDF 第1頁
-教務處|黃東治教務長|1503|PDF 第1頁
-教務處|陳月娥副教務長|1513|PDF 第1頁
-教務處|李彩鳳組長|1593|PDF 第1頁
-教務處|蔡玫君組長|1581|PDF 第1頁
-教務處|殷家婷組長|1528|PDF 第1頁
-教務處|專用教室|8537|PDF 第1頁
-總務處|王翔星總務長|1603|PDF 第1頁
-總務處|邱慧玲專門委員|1607|PDF 第1頁
-總務處|陳正霖組長|1101|PDF 第1頁
-總務處|鍾權淇組長|1151|PDF 第1頁
-總務處|吳宗錫|1152|PDF 第1頁
-總務處|郭原宏|1153|PDF 第1頁
-總務處|水電|1092|PDF 第1頁
-總務處|行政大樓警勤室|1106|PDF 第1頁
-圖書暨體育博物館|密集書庫|6101|PDF 第1頁
-圖書暨體育博物館|陳珈宏組長|6205|PDF 第1頁
-圖書暨體育博物館|期刊室|6301|PDF 第1頁
-圖書暨體育博物館|3樓櫃台|6302|PDF 第1頁
-圖書暨體育博物館|資訊機房|6303|PDF 第1頁
-圖書暨體育博物館|黃永旺館長|6401|PDF 第1頁
-體育處|范姜昕辰體育長|5005|PDF 第1頁
-體育處|場館經營暨體育活動組|5005|PDF 第1頁
-體育處|孫嘉穗(室內外網球場)|5001|PDF 第1頁
-體育處|張瑜庭(綜合體育館)|5002|PDF 第1頁
-體育處|郭倩如(籃球、排球、桌球)|5016|PDF 第1頁
-體育處|梁怡婷(田徑場、足球場)|5019|PDF 第1頁
-體育處|貴賓室|7101|PDF 第1頁
-體育處|重量訓練室|7103|PDF 第1頁
-進修推廣部|黃永寬部主任|8101|PDF 第1頁
-進修推廣部|服務專線|397-1574|PDF 第1頁
-進修推廣部|王俊杰 活動組組長|8102|PDF 第1頁
-進修推廣部|官銓輿 推廣組組長|8103|PDF 第1頁
-進修推廣部|李敏華 進修組組長|8104|PDF 第1頁
-進修推廣部|陳彥如|8105|PDF 第1頁
-進修推廣部|林璟雯|8106|PDF 第1頁
-進修推廣部|張凱婷|8108|PDF 第1頁
-體育學院|院長 王凱立|8504|PDF 第2頁
-體育學院|體育研究所|8505|PDF 第2頁
-體育學院|湯穎筑|8503|PDF 第2頁
-體育學院|陳成業|8609|PDF 第2頁
-體育學院|陳龍弘|8654|PDF 第2頁
-體育學院|歐俠宏|8608|PDF 第2頁
-體育學院|林駿傑|8658|PDF 第2頁
-運動與健康科學學院|院長 陳光輝|2305|PDF 第2頁
-運動與健康科學學院|運動科學研究所|2301|PDF 第2頁
-運動與健康科學學院|徐藝洳|2619|PDF 第2頁
-運動與健康科學學院|何金山|2425|PDF 第2頁
-運動與健康科學學院|黃啓彰|2409|PDF 第2頁
-運動與健康科學學院|陳光輝|2462|PDF 第2頁
-運動與健康科學學院|運動生理實驗室|2618/2620|PDF 第2頁
-競技學院|院長 湯文慈|2212|PDF 第2頁
-競技學院|林孟儒|2512|PDF 第2頁
-競技學院|湯文慈|2407|PDF 第2頁
-競技學院|詹貴惠|2423|PDF 第2頁
-競技學院|陳志榮|2449|PDF 第2頁
-競技學院|鄭世忠|2416|PDF 第2頁
-競技學院|林彥光|8618|PDF 第2頁
-教學單位|陸上運動技術學系|2211|PDF 第2頁
-教學單位|球類運動技術學系|2205|PDF 第2頁
-教學單位|技擊運動技術學系|2221|PDF 第2頁
-教學單位|運動保健學系|2301|PDF 第2頁
-教學單位|適應體育學系(圍棋)|8521|PDF 第2頁
-教學單位|體育推廣學系|8511|PDF 第2頁
-教學單位|休閒產業經營學系|8551|PDF 第2頁
-管理學院|中心主任 洪福源|8561|PDF 第2頁
-管理學院|國際體育事務碩士學位學程|8501|PDF 第2頁
-管理學院|管理學院碩士在職專班|8603|PDF 第2頁
-通識教育中心|洪福源(代理)|8581|PDF 第2頁
-師資培育中心|林安廸組長|8563|PDF 第2頁
-師資培育中心|綜合業務暨地方教育輔導組|8565|PDF 第2頁
-教授研究室|鍾阮鳳|8552|PDF 第2頁
-教授研究室|謝宜諺|8432|PDF 第2頁
-教授研究室|楊薇玉|8432|PDF 第2頁
-教授研究室|施靜琪|8504|PDF 第2頁
-教授研究室|陳昱嘉|1568|PDF 第2頁
-體適能中心|體適能櫃台|2017|PDF 第2頁
-體適能中心|紓壓室|2019|PDF 第2頁`;
+    const STORAGE_KEY = "ntsu-11504-admin-teaching-v2";
+    const seedRecords = [{"id":"pdf-1","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"328-1755","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=743.26"},{"id":"pdf-2","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"328-0626","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=743.26"},{"id":"pdf-3","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"318-1453","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=743.26"},{"id":"pdf-4","category":"行政單位","unit":"行政單位","name":"傳真","phone":"211-4194","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=743.26"},{"id":"pdf-5","category":"行政單位","unit":"行政單位","name":"傳真","phone":"397-2904","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=743.26"},{"id":"pdf-6","category":"行政單位","unit":"行政單位","name":"專線","phone":"397-4299","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=743.26"},{"id":"pdf-7","category":"行政單位","unit":"行政單位","name":"邱炳坤校長","phone":"1608","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=725.74"},{"id":"pdf-8","category":"行政單位","unit":"行政單位","name":"湯惠婷學務長","phone":"1509","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=725.74"},{"id":"pdf-9","category":"行政單位","unit":"行政單位","name":"黃東治教務長","phone":"1503","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=725.74"},{"id":"pdf-10","category":"行政單位","unit":"行政單位","name":"王翔星總務長","phone":"1603","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=725.74"},{"id":"pdf-11","category":"行政單位","unit":"行政單位","name":"范姜昕辰體育長","phone":"5005","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=725.74"},{"id":"pdf-12","category":"行政單位","unit":"行政單位","name":"校長室","phone":"1610","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=708.10"},{"id":"pdf-13","category":"行政單位","unit":"行政單位","name":"學務處辦公室","phone":"1512","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=708.10"},{"id":"pdf-14","category":"行政單位","unit":"行政單位","name":"陳月娥副教務長","phone":"1513","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=708.10"},{"id":"pdf-15","category":"行政單位","unit":"行政單位","name":"邱慧玲專門委員","phone":"1607","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=708.10"},{"id":"pdf-16","category":"行政單位","unit":"行政單位","name":"密集書庫","phone":"6101","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=708.10"},{"id":"pdf-17","category":"行政單位","unit":"行政單位","name":"服務專線","phone":"397-1574","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=708.10"},{"id":"pdf-18","category":"行政單位","unit":"行政單位","name":"黃明麗","phone":"1619","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=695.86"},{"id":"pdf-19","category":"行政單位","unit":"行政單位","name":"7-11便利商店","phone":"318-6047","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=695.86"},{"id":"pdf-20","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"327-1946","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=695.86"},{"id":"pdf-21","category":"行政單位","unit":"行政單位","name":"服務專線","phone":"397-4142","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=695.86"},{"id":"pdf-22","category":"行政單位","unit":"行政單位","name":"傳真","phone":"328-8192","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=683.62"},{"id":"pdf-23","category":"行政單位","unit":"行政單位","name":"組長","phone":"1532","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=683.62"},{"id":"pdf-24","category":"行政單位","unit":"行政單位","name":"吳明賢","phone":"1604","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=683.62"},{"id":"pdf-25","category":"行政單位","unit":"行政單位","name":"傳真","phone":"397-2904","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=683.62"},{"id":"pdf-26","category":"行政單位","unit":"行政單位","name":"傳真","phone":"397-9283","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=683.62"},{"id":"pdf-27","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"328-0629","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=671.38"},{"id":"pdf-28","category":"行政單位","unit":"行政單位","name":"楊孟容主任","phone":"1301","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=671.38"},{"id":"pdf-29","category":"行政單位","unit":"行政單位","name":"曹君琪","phone":"1533","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=671.38"},{"id":"pdf-30","category":"行政單位","unit":"行政單位","name":"陳珈宏組長","phone":"6205","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=671.38"},{"id":"pdf-31","category":"行政單位","unit":"行政單位","name":"王俊杰 活動組組長","phone":"8102","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=671.38"},{"id":"pdf-32","category":"行政單位","unit":"行政單位","name":"游韻如","phone":"1302","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=659.11"},{"id":"pdf-33","category":"行政單位","unit":"行政單位","name":"林淑華","phone":"1534","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=659.11"},{"id":"pdf-34","category":"行政單位","unit":"行政單位","name":"專線、傳真","phone":"328-0591","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=659.11"},{"id":"pdf-35","category":"行政單位","unit":"行政單位","name":"江承楓","phone":"6201","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=659.11"},{"id":"pdf-36","category":"行政單位","unit":"行政單位","name":"鄭誠諒組長","phone":"5005","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=659.11"},{"id":"pdf-37","category":"行政單位","unit":"行政單位","name":"官銓輿 推廣組組長","phone":"8103","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=659.11"},{"id":"pdf-38","category":"行政單位","unit":"行政單位","name":"黃東治副校長","phone":"1606","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=646.87"},{"id":"pdf-39","category":"行政單位","unit":"行政單位","name":"陳正霖組長","phone":"1101","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=646.87"},{"id":"pdf-40","category":"行政單位","unit":"行政單位","name":"陳玉琴","phone":"6202","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=646.87"},{"id":"pdf-41","category":"行政單位","unit":"行政單位","name":"黃淑英秘書","phone":"5013","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=646.87"},{"id":"pdf-42","category":"行政單位","unit":"行政單位","name":"李敏華 進修組組長","phone":"8104","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=646.87"},{"id":"pdf-43","category":"行政單位","unit":"行政單位","name":"陳國儀副校長","phone":"1688","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=634.63"},{"id":"pdf-44","category":"行政單位","unit":"行政單位","name":"劉逸晉","phone":"1303","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=634.63"},{"id":"pdf-45","category":"行政單位","unit":"行政單位","name":"李彩鳳組長","phone":"1593","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=634.63"},{"id":"pdf-46","category":"行政單位","unit":"行政單位","name":"錢思語","phone":"1103","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=634.63"},{"id":"pdf-47","category":"行政單位","unit":"行政單位","name":"賴柏翰","phone":"6203","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=634.63"},{"id":"pdf-48","category":"行政單位","unit":"行政單位","name":"黃向軒","phone":"5010","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=634.63"},{"id":"pdf-49","category":"行政單位","unit":"行政單位","name":"陳彥如","phone":"8105","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=634.63"},{"id":"pdf-50","category":"行政單位","unit":"行政單位","name":"黃錫秋","phone":"1658","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=622.39"},{"id":"pdf-51","category":"行政單位","unit":"行政單位","name":"彭玉文","phone":"1303","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=622.39"},{"id":"pdf-52","category":"行政單位","unit":"行政單位","name":"許洛寧","phone":"1504","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=622.39"},{"id":"pdf-53","category":"行政單位","unit":"行政單位","name":"薛卉伶","phone":"1104","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=622.39"},{"id":"pdf-54","category":"行政單位","unit":"行政單位","name":"李嘉苓","phone":"6206","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=622.39"},{"id":"pdf-55","category":"行政單位","unit":"行政單位","name":"林璟雯","phone":"8106","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=622.39"},{"id":"pdf-56","category":"行政單位","unit":"行政單位","name":"蘇偉誠","phone":"1307","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=610.15"},{"id":"pdf-57","category":"行政單位","unit":"行政單位","name":"胡建霆","phone":"1518","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=610.15"},{"id":"pdf-58","category":"行政單位","unit":"行政單位","name":"施淑媚","phone":"1105","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=610.15"},{"id":"pdf-59","category":"行政單位","unit":"行政單位","name":"謝筑虹","phone":"8107","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=610.15"},{"id":"pdf-60","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"328-0630","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=597.91"},{"id":"pdf-61","category":"行政單位","unit":"行政單位","name":"專用教室","phone":"8537","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=597.91"},{"id":"pdf-62","category":"行政單位","unit":"行政單位","name":"蔡雅惠","phone":"1107","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=597.91"},{"id":"pdf-63","category":"行政單位","unit":"行政單位","name":"孫嘉穗(室內外網球場)","phone":"5001","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=597.91"},{"id":"pdf-64","category":"行政單位","unit":"行政單位","name":"張凱婷","phone":"8108","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=597.91"},{"id":"pdf-65","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"328-1869","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=585.67"},{"id":"pdf-66","category":"行政單位","unit":"行政單位","name":"胡嘉宜","phone":"1304","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=585.67"},{"id":"pdf-67","category":"行政單位","unit":"行政單位","name":"司機室","phone":"1110","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=585.67"},{"id":"pdf-68","category":"行政單位","unit":"行政單位","name":"張瑜庭(綜合體育館)","phone":"5002","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=585.67"},{"id":"pdf-69","category":"行政單位","unit":"行政單位","name":"李欣怡","phone":"8109","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=585.67"},{"id":"pdf-70","category":"行政單位","unit":"行政單位","name":"傳真","phone":"328-4047","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=573.43"},{"id":"pdf-71","category":"行政單位","unit":"行政單位","name":"張雅閒","phone":"1304","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=573.43"},{"id":"pdf-72","category":"行政單位","unit":"行政單位","name":"楊証惠","phone":"1592","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=573.43"},{"id":"pdf-73","category":"行政單位","unit":"行政單位","name":"期刊室","phone":"6301","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=573.43"},{"id":"pdf-74","category":"行政單位","unit":"行政單位","name":"郭倩如(籃球、排球、桌球)","phone":"5016","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=573.43"},{"id":"pdf-75","category":"行政單位","unit":"行政單位","name":"葛至峹","phone":"8111","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=573.43"},{"id":"pdf-76","category":"行政單位","unit":"行政單位","name":"陳成業主任秘書","phone":"1616","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=561.19"},{"id":"pdf-77","category":"行政單位","unit":"行政單位","name":"周伃涵","phone":"1306","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=561.19"},{"id":"pdf-78","category":"行政單位","unit":"行政單位","name":"史明悌","phone":"1592","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=561.19"},{"id":"pdf-79","category":"行政單位","unit":"行政單位","name":"3樓櫃台","phone":"6302","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=561.19"},{"id":"pdf-80","category":"行政單位","unit":"行政單位","name":"陳彥豪","phone":"5017","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=561.19"},{"id":"pdf-81","category":"行政單位","unit":"行政單位","name":"甘庭蓁","phone":"8117","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=561.19"},{"id":"pdf-82","category":"行政單位","unit":"行政單位","name":"郭婉伶專門委員","phone":"1614","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=548.95"},{"id":"pdf-83","category":"行政單位","unit":"行政單位","name":"張文欣","phone":"1306","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=548.95"},{"id":"pdf-84","category":"行政單位","unit":"行政單位","name":"資訊機房","phone":"6303","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=548.95"},{"id":"pdf-85","category":"行政單位","unit":"行政單位","name":"梁怡婷(田徑場、足球場)","phone":"5019","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=548.95"},{"id":"pdf-86","category":"行政單位","unit":"行政單位","name":"秘書","phone":"1618","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=536.71"},{"id":"pdf-87","category":"行政單位","unit":"行政單位","name":"靖萍","phone":"1306","note":"","source":"PDF 第1頁","coordinate":"x=190.82, y=536.47"},{"id":"pdf-88","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"397-1897","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=536.71"},{"id":"pdf-89","category":"行政單位","unit":"行政單位","name":"專線、傳真","phone":"328-0590","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=536.71"},{"id":"pdf-90","category":"行政單位","unit":"行政單位","name":"會議室","phone":"5004","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=536.71"},{"id":"pdf-91","category":"行政單位","unit":"行政單位","name":"許玉釵","phone":"1615","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=524.47"},{"id":"pdf-92","category":"行政單位","unit":"行政單位","name":"蔡玫君組長","phone":"1581","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=524.47"},{"id":"pdf-93","category":"行政單位","unit":"行政單位","name":"鍾權淇組長","phone":"1151","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=524.47"},{"id":"pdf-94","category":"行政單位","unit":"行政單位","name":"黃永旺館長","phone":"6401","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=524.47"},{"id":"pdf-95","category":"行政單位","unit":"行政單位","name":"呂紹源","phone":"1617","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=512.23"},{"id":"pdf-96","category":"行政單位","unit":"行政單位","name":"殷家婷組長","phone":"1528","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=512.23"},{"id":"pdf-97","category":"行政單位","unit":"行政單位","name":"周淑萍","phone":"1501","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=512.23"},{"id":"pdf-98","category":"行政單位","unit":"行政單位","name":"吳宗錫","phone":"1152","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=512.23"},{"id":"pdf-99","category":"行政單位","unit":"行政單位","name":"王秋閔","phone":"6403","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=512.23"},{"id":"pdf-100","category":"行政單位","unit":"行政單位","name":"黃織錦","phone":"1662","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=499.97"},{"id":"pdf-101","category":"行政單位","unit":"行政單位","name":"吳雨潤","phone":"1552","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=499.97"},{"id":"pdf-102","category":"行政單位","unit":"行政單位","name":"鄭若吟","phone":"1502","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=499.97"},{"id":"pdf-103","category":"行政單位","unit":"行政單位","name":"郭原宏","phone":"1153","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=499.97"},{"id":"pdf-104","category":"行政單位","unit":"行政單位","name":"傳真","phone":"328-4210","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=499.97"},{"id":"pdf-105","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"397-4231~3","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=499.97"},{"id":"pdf-106","category":"行政單位","unit":"行政單位","name":"趙建元","phone":"1553","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=487.73"},{"id":"pdf-107","category":"行政單位","unit":"行政單位","name":"曾長仁","phone":"1505","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=487.73"},{"id":"pdf-108","category":"行政單位","unit":"行政單位","name":"邱國凱","phone":"1156","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=487.73"},{"id":"pdf-109","category":"行政單位","unit":"行政單位","name":"傳真","phone":"397-4230","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=487.73"},{"id":"pdf-110","category":"行政單位","unit":"行政單位","name":"傅代立","phone":"1555","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=475.49"},{"id":"pdf-111","category":"行政單位","unit":"行政單位","name":"張莘悅","phone":"1582","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=475.49"},{"id":"pdf-112","category":"行政單位","unit":"行政單位","name":"姜宜庭","phone":"1157","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=475.49"},{"id":"pdf-113","category":"行政單位","unit":"行政單位","name":"專線/傳真","phone":"328-3922","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=475.49"},{"id":"pdf-114","category":"行政單位","unit":"行政單位","name":"黃廸偉/游人愷","phone":"5111/5112","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=475.49"},{"id":"pdf-115","category":"行政單位","unit":"行政單位","name":"蕭吉宏","phone":"1557","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=463.25"},{"id":"pdf-116","category":"行政單位","unit":"行政單位","name":"蔡沂蓁","phone":"1583","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=463.25"},{"id":"pdf-117","category":"行政單位","unit":"行政單位","name":"楊順發","phone":"1158","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=463.01"},{"id":"pdf-118","category":"行政單位","unit":"行政單位","name":"專線、傳真","phone":"328-0624","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=463.25"},{"id":"pdf-119","category":"行政單位","unit":"行政單位","name":"蔡添全","phone":"3111","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=463.25"},{"id":"pdf-120","category":"行政單位","unit":"行政單位","name":"范濠庭/甘琬琪","phone":"5111/5112","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=463.25"},{"id":"pdf-121","category":"行政單位","unit":"行政單位","name":"曾文美","phone":"1574","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=451.01"},{"id":"pdf-122","category":"行政單位","unit":"行政單位","name":"陳冠霖","phone":"1584","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=451.01"},{"id":"pdf-123","category":"行政單位","unit":"行政單位","name":"王依羚","phone":"1159","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=451.01"},{"id":"pdf-124","category":"行政單位","unit":"行政單位","name":"黃永旺館長","phone":"6501","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=451.01"},{"id":"pdf-125","category":"行政單位","unit":"行政單位","name":"郭歆晨","phone":"3111","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=451.01"},{"id":"pdf-126","category":"行政單位","unit":"行政單位","name":"201室學人宿舍","phone":"328-1780","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=451.01"},{"id":"pdf-127","category":"行政單位","unit":"行政單位","name":"徐薇萍","phone":"2015","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=438.77"},{"id":"pdf-128","category":"行政單位","unit":"行政單位","name":"陳佳惠","phone":"1585","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=438.77"},{"id":"pdf-129","category":"行政單位","unit":"行政單位","name":"水電","phone":"1092","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=438.53"},{"id":"pdf-130","category":"行政單位","unit":"行政單位","name":"晏才傑組長","phone":"6503","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=438.77"},{"id":"pdf-131","category":"行政單位","unit":"行政單位","name":"黃子暐","phone":"3111","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=438.77"},{"id":"pdf-132","category":"行政單位","unit":"行政單位","name":"黃慧綺","phone":"2016","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=426.53"},{"id":"pdf-133","category":"行政單位","unit":"行政單位","name":"周文庭","phone":"1586","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=426.53"},{"id":"pdf-134","category":"行政單位","unit":"行政單位","name":"典藏室(紀念品)","phone":"6505","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=426.53"},{"id":"pdf-135","category":"行政單位","unit":"行政單位","name":"黃稚家","phone":"3112","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=426.53"},{"id":"pdf-136","category":"行政單位","unit":"行政單位","name":"傳真","phone":"328-0615","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=414.29"},{"id":"pdf-137","category":"行政單位","unit":"行政單位","name":"校安專線","phone":"0965-000501","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=414.29"},{"id":"pdf-138","category":"行政單位","unit":"行政單位","name":"卓育如","phone":"1587","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=414.29"},{"id":"pdf-139","category":"行政單位","unit":"行政單位","name":"沈詩涵組長","phone":"1165","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=402.05"},{"id":"pdf-140","category":"行政單位","unit":"行政單位","name":"家菲","phone":"1588","note":"","source":"PDF 第1頁","coordinate":"x=353.21, y=401.81"},{"id":"pdf-141","category":"行政單位","unit":"行政單位","name":"貴賓室","phone":"7101","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=402.05"},{"id":"pdf-142","category":"行政單位","unit":"行政單位","name":"鴻宗穎主任","phone":"8119","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=402.05"},{"id":"pdf-143","category":"行政單位","unit":"行政單位","name":"許曉萍","phone":"1161","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=389.57"},{"id":"pdf-144","category":"行政單位","unit":"行政單位","name":"蔡勤","phone":"1589","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=389.81"},{"id":"pdf-145","category":"行政單位","unit":"行政單位","name":"會議室","phone":"7102","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=389.81"},{"id":"pdf-146","category":"行政單位","unit":"行政單位","name":"陳凱銘","phone":"8112","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=389.81"},{"id":"pdf-147","category":"行政單位","unit":"行政單位","name":"黃詩芳","phone":"1162","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=377.57"},{"id":"pdf-148","category":"行政單位","unit":"行政單位","name":"重量訓練室","phone":"7103","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=377.57"},{"id":"pdf-149","category":"行政單位","unit":"行政單位","name":"王蘇聿芃","phone":"8113","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=377.57"},{"id":"pdf-150","category":"行政單位","unit":"行政單位","name":"陳俊融","phone":"1163","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=365.33"},{"id":"pdf-151","category":"行政單位","unit":"行政單位","name":"謝奇穎主任","phone":"1512","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=365.33"},{"id":"pdf-152","category":"行政單位","unit":"行政單位","name":"專線、傳真","phone":"328-0594","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=365.33"},{"id":"pdf-153","category":"行政單位","unit":"行政單位","name":"林岑怡主任","phone":"8628","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=365.33"},{"id":"pdf-154","category":"行政單位","unit":"行政單位","name":"柔道訓練場","phone":"7201","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=365.33"},{"id":"pdf-155","category":"行政單位","unit":"行政單位","name":"原資中心","phone":"8123","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=365.33"},{"id":"pdf-156","category":"行政單位","unit":"行政單位","name":"陳秀馨","phone":"1168","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=353.09"},{"id":"pdf-157","category":"行政單位","unit":"行政單位","name":"楊秀敏組長","phone":"1406","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=353.09"},{"id":"pdf-158","category":"行政單位","unit":"行政單位","name":"播音/報室(中控)","phone":"7301","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=353.09"},{"id":"pdf-159","category":"行政單位","unit":"行政單位","name":"林千瑀","phone":"8125","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=353.09"},{"id":"pdf-160","category":"行政單位","unit":"行政單位","name":"曾奕誠","phone":"1568","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=340.82"},{"id":"pdf-161","category":"行政單位","unit":"行政單位","name":"曾齡萱","phone":"1407","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=340.82"},{"id":"pdf-162","category":"行政單位","unit":"行政單位","name":"王榮照","phone":"7301","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=340.82"},{"id":"pdf-163","category":"行政單位","unit":"行政單位","name":"宸笙","phone":"8126","note":"","source":"PDF 第1頁","coordinate":"x=1026.82, y=340.58"},{"id":"pdf-164","category":"行政單位","unit":"行政單位","name":"吳孟欣","phone":"1568","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=328.58"},{"id":"pdf-165","category":"行政單位","unit":"行政單位","name":"李雅雯","phone":"1408","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=328.58"},{"id":"pdf-166","category":"行政單位","unit":"行政單位","name":"終點攝影室","phone":"7302","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=328.58"},{"id":"pdf-167","category":"行政單位","unit":"行政單位","name":"高子璽","phone":"1568","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=315.74"},{"id":"pdf-168","category":"行政單位","unit":"行政單位","name":"林宣佑","phone":"1409","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=315.74"},{"id":"pdf-169","category":"行政單位","unit":"行政單位","name":"傳真","phone":"328-0611","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=302.78"},{"id":"pdf-170","category":"行政單位","unit":"行政單位","name":"專線、傳真","phone":"327-8320","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=302.78"},{"id":"pdf-171","category":"行政單位","unit":"行政單位","name":"呂宗翰","phone":"1568","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=302.78"},{"id":"pdf-172","category":"行政單位","unit":"行政單位","name":"陳宜芬","phone":"1410","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=302.78"},{"id":"pdf-173","category":"行政單位","unit":"行政單位","name":"專線、傳真","phone":"396-0154","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=302.78"},{"id":"pdf-174","category":"行政單位","unit":"行政單位","name":"主任","phone":"1621","note":"","source":"PDF 第1頁","coordinate":"x=68.16, y=290.30"},{"id":"pdf-175","category":"行政單位","unit":"行政單位","name":"張芮語組長","phone":"1571","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=290.54"},{"id":"pdf-176","category":"行政單位","unit":"行政單位","name":"辦公室分機","phone":"2011","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=290.54"},{"id":"pdf-177","category":"行政單位","unit":"行政單位","name":"黃燕瑜組長","phone":"1623","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=278.30"},{"id":"pdf-178","category":"行政單位","unit":"行政單位","name":"林郁婷","phone":"1572","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=278.30"},{"id":"pdf-179","category":"行政單位","unit":"行政單位","name":"鄭星繪","phone":"2007","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=278.30"},{"id":"pdf-180","category":"行政單位","unit":"行政單位","name":"陳禹甹","phone":"1362","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=278.30"},{"id":"pdf-181","category":"行政單位","unit":"行政單位","name":"呂婉甄","phone":"1622","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=265.46"},{"id":"pdf-182","category":"行政單位","unit":"行政單位","name":"陳盈甄","phone":"1573","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=265.46"},{"id":"pdf-183","category":"行政單位","unit":"行政單位","name":"陳又佳","phone":"2018","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=265.46"},{"id":"pdf-184","category":"行政單位","unit":"行政單位","name":"汪惠貞","phone":"1364","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=265.46"},{"id":"pdf-185","category":"行政單位","unit":"行政單位","name":"張芝婷","phone":"1624","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=252.50"},{"id":"pdf-186","category":"行政單位","unit":"行政單位","name":"傳真","phone":"328-5461","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=252.50"},{"id":"pdf-187","category":"行政單位","unit":"行政單位","name":"專線、傳真","phone":"328-4206","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=252.50"},{"id":"pdf-188","category":"行政單位","unit":"行政單位","name":"傳真","phone":"397-2578","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=252.50"},{"id":"pdf-189","category":"行政單位","unit":"行政單位","name":"江李延芬","phone":"1365","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=252.50"},{"id":"pdf-190","category":"行政單位","unit":"行政單位","name":"歐奕伶","phone":"1625","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=240.26"},{"id":"pdf-191","category":"行政單位","unit":"行政單位","name":"黃啓彰研發長","phone":"1212","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=240.26"},{"id":"pdf-192","category":"行政單位","unit":"行政單位","name":"劉芳君組長","phone":"1402","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=240.26"},{"id":"pdf-193","category":"行政單位","unit":"行政單位","name":"黃雲龍中心主任","phone":"1422","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=240.26"},{"id":"pdf-194","category":"行政單位","unit":"行政單位","name":"教練研究室","phone":"3140","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=240.26"},{"id":"pdf-195","category":"行政單位","unit":"行政單位","name":"謝蘊儀","phone":"8114","note":"","source":"PDF 第1頁","coordinate":"x=1016.86, y=240.26"},{"id":"pdf-196","category":"行政單位","unit":"行政單位","name":"藍淑純","phone":"1627","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=228.02"},{"id":"pdf-197","category":"行政單位","unit":"行政單位","name":"周佳琪","phone":"1322","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=228.02"},{"id":"pdf-198","category":"行政單位","unit":"行政單位","name":"射箭場","phone":"3141","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=228.02"},{"id":"pdf-199","category":"行政單位","unit":"行政單位","name":"劉冠如","phone":"1629","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=215.78"},{"id":"pdf-200","category":"行政單位","unit":"行政單位","name":"陳惠雅組長","phone":"1233","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=215.78"},{"id":"pdf-201","category":"行政單位","unit":"行政單位","name":"陳慶傑","phone":"1323","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=215.78"},{"id":"pdf-202","category":"行政單位","unit":"行政單位","name":"吳裕勝組長","phone":"1431","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=215.78"},{"id":"pdf-203","category":"行政單位","unit":"行政單位","name":"舉重訓練場","phone":"5018","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=215.78"},{"id":"pdf-204","category":"行政單位","unit":"行政單位","name":"王志玲","phone":"1630","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=203.54"},{"id":"pdf-205","category":"行政單位","unit":"行政單位","name":"蕭秀萍","phone":"1233","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=203.54"},{"id":"pdf-206","category":"行政單位","unit":"行政單位","name":"康維芬","phone":"1401","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=203.54"},{"id":"pdf-207","category":"行政單位","unit":"行政單位","name":"陳姿君","phone":"1423","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=203.54"},{"id":"pdf-208","category":"行政單位","unit":"行政單位","name":"體操訓練場","phone":"5019","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=203.54"},{"id":"pdf-209","category":"行政單位","unit":"行政單位","name":"姚昊雲","phone":"1235","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=190.70"},{"id":"pdf-210","category":"行政單位","unit":"行政單位","name":"方奕晴","phone":"1424","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=190.70"},{"id":"pdf-211","category":"行政單位","unit":"行政單位","name":"羽球場","phone":"2218","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=190.70"},{"id":"pdf-212","category":"行政單位","unit":"行政單位","name":"傳真","phone":"328-0628","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=177.74"},{"id":"pdf-213","category":"行政單位","unit":"行政單位","name":"專線電話","phone":"327-2476","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=177.74"},{"id":"pdf-214","category":"行政單位","unit":"行政單位","name":"跆拳道場","phone":"2510","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=177.74"},{"id":"pdf-215","category":"行政單位","unit":"行政單位","name":"施麗玲主任","phone":"1631","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=165.48"},{"id":"pdf-216","category":"行政單位","unit":"行政單位","name":"陳惠雅主任","phone":"1217","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=165.48"},{"id":"pdf-217","category":"行政單位","unit":"行政單位","name":"行政大樓警勤室","phone":"1106","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=165.48"},{"id":"pdf-218","category":"行政單位","unit":"行政單位","name":"吳裕勝組長","phone":"1425","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=165.48"},{"id":"pdf-219","category":"行政單位","unit":"行政單位","name":"吳詩涵","phone":"1632","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=153.24"},{"id":"pdf-220","category":"行政單位","unit":"行政單位","name":"宿舍管理中心","phone":"6111","note":"","source":"PDF 第1頁","coordinate":"x=180.86, y=153.24"},{"id":"pdf-221","category":"行政單位","unit":"行政單位","name":"郭俐君","phone":"1216","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=153.24"},{"id":"pdf-222","category":"行政單位","unit":"行政單位","name":"徐正榮小隊長","phone":"1325","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=153.24"},{"id":"pdf-223","category":"行政單位","unit":"行政單位","name":"王永彰","phone":"1427","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=153.24"},{"id":"pdf-224","category":"行政單位","unit":"行政單位","name":"陳紘","phone":"1633","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=141.00"},{"id":"pdf-225","category":"行政單位","unit":"行政單位","name":"學校大門警勤室","phone":"328-0620","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=141.00"},{"id":"pdf-226","category":"行政單位","unit":"行政單位","name":"葉榮宗","phone":"1428","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=141.00"},{"id":"pdf-227","category":"行政單位","unit":"行政單位","name":"吳皇明","phone":"1634","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=128.76"},{"id":"pdf-228","category":"行政單位","unit":"行政單位","name":"黃美珠","phone":"1234","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=128.76"},{"id":"pdf-229","category":"行政單位","unit":"行政單位","name":"行政大樓警勤室","phone":"328-0623","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=128.76"},{"id":"pdf-230","category":"行政單位","unit":"行政單位","name":"林曉慧","phone":"1429","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=128.76"},{"id":"pdf-231","category":"行政單位","unit":"行政單位","name":"張佩婷","phone":"1635","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=116.52"},{"id":"pdf-232","category":"行政單位","unit":"行政單位","name":"育成中心","phone":"1119 / 1115","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=116.52"},{"id":"pdf-233","category":"行政單位","unit":"行政單位","name":"迴龍哨","phone":"327-1662","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=116.52"},{"id":"pdf-234","category":"行政單位","unit":"行政單位","name":"駐點人員","phone":"1426","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=116.52"},{"id":"pdf-235","category":"行政單位","unit":"行政單位","name":"國際會議廳","phone":"2127","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=116.52"},{"id":"pdf-236","category":"行政單位","unit":"行政單位","name":"張瑞霞","phone":"1636","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=104.28"},{"id":"pdf-237","category":"行政單位","unit":"行政單位","name":"交管亭","phone":"5110","note":"","source":"PDF 第1頁","coordinate":"x=499.49, y=104.28"},{"id":"pdf-238","category":"行政單位","unit":"行政單位","name":"機房","phone":"8500","note":"","source":"PDF 第1頁","coordinate":"x=648.55, y=104.28"},{"id":"pdf-239","category":"行政單位","unit":"行政單位","name":"504會議室","phone":"1508","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=104.28"},{"id":"pdf-240","category":"行政單位","unit":"行政單位","name":"趙薇","phone":"1639","note":"","source":"PDF 第1頁","coordinate":"x=38.40, y=92.04"},{"id":"pdf-241","category":"行政單位","unit":"行政單位","name":"林彥光主任","phone":"1232","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=92.04"},{"id":"pdf-242","category":"行政單位","unit":"行政單位","name":"515會議室","phone":"1515","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=92.04"},{"id":"pdf-243","category":"行政單位","unit":"行政單位","name":"心苑","phone":"1620","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=79.80"},{"id":"pdf-244","category":"行政單位","unit":"行政單位","name":"林燦煌","phone":"1231","note":"","source":"PDF 第1頁","coordinate":"x=343.22, y=67.56"},{"id":"pdf-245","category":"行政單位","unit":"行政單位","name":"行政大樓103","phone":"3126","note":"","source":"PDF 第1頁","coordinate":"x=793.51, y=55.32"},{"id":"pdf-246","category":"行政單位","unit":"行政單位","name":"立峰","phone":"1269","note":"","source":"PDF 第1頁","coordinate":"x=353.21, y=42.60"},{"id":"pdf-247","category":"教學單位","unit":"教學單位","name":"傳真","phone":"328-4046","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=710.86"},{"id":"pdf-248","category":"教學單位","unit":"教學單位","name":"胡嫚娟/黃宏凱","phone":"2213","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=678.10"},{"id":"pdf-249","category":"教學單位","unit":"教學單位","name":"蕭郁諠","phone":"8564","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=678.10"},{"id":"pdf-250","category":"教學單位","unit":"教學單位","name":"胡建霆","phone":"8582","note":"","source":"PDF 第2頁","coordinate":"x=1065.58, y=678.10"},{"id":"pdf-251","category":"教學單位","unit":"教學單位","name":"梁淑芳","phone":"8661","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=667.15"},{"id":"pdf-252","category":"教學單位","unit":"教學單位","name":"專線傳真","phone":"328-0619","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=656.23"},{"id":"pdf-253","category":"教學單位","unit":"教學單位","name":"專線電話","phone":"328-0592","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=656.23"},{"id":"pdf-254","category":"教學單位","unit":"教學單位","name":"專線電話","phone":"328-0596","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=656.23"},{"id":"pdf-255","category":"教學單位","unit":"教學單位","name":"洪福源","phone":"8640","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=656.23"},{"id":"pdf-256","category":"教學單位","unit":"教學單位","name":"傳真","phone":"327-2203","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=645.31"},{"id":"pdf-257","category":"教學單位","unit":"教學單位","name":"王翔星","phone":"8607","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=645.31"},{"id":"pdf-258","category":"教學單位","unit":"教學單位","name":"林安廸","phone":"2415","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=634.39"},{"id":"pdf-259","category":"教學單位","unit":"教學單位","name":"陳琨義","phone":"1353","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=623.47"},{"id":"pdf-260","category":"教學單位","unit":"教學單位","name":"林孟儒","phone":"2512","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=612.55"},{"id":"pdf-261","category":"教學單位","unit":"教學單位","name":"林孟儒","phone":"2502","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=612.55"},{"id":"pdf-262","category":"教學單位","unit":"教學單位","name":"生理實驗室","phone":"2506","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=612.55"},{"id":"pdf-263","category":"教學單位","unit":"教學單位","name":"魏榆倩","phone":"2619","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=612.55"},{"id":"pdf-264","category":"教學單位","unit":"教學單位","name":"簡亞庭/黃昱瑄","phone":"8532","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=612.55"},{"id":"pdf-265","category":"教學單位","unit":"教學單位","name":"簡亞庭/黃昱瑄","phone":"8533","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=612.55"},{"id":"pdf-266","category":"教學單位","unit":"教學單位","name":"湯穎筑","phone":"8503","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=612.31"},{"id":"pdf-267","category":"教學單位","unit":"教學單位","name":"湯文慈","phone":"2407","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=601.63"},{"id":"pdf-268","category":"教學單位","unit":"教學單位","name":"湯文慈","phone":"328-1756","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=601.63"},{"id":"pdf-269","category":"教學單位","unit":"教學單位","name":"運動醫學研究室/王彥中/黃國峰","phone":"2503","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=601.63"},{"id":"pdf-270","category":"教學單位","unit":"教學單位","name":"何金山","phone":"2425","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=601.63"},{"id":"pdf-271","category":"教學單位","unit":"教學單位","name":"黃東治","phone":"8629","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=601.63"},{"id":"pdf-272","category":"教學單位","unit":"教學單位","name":"詹貴惠","phone":"2423","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=590.71"},{"id":"pdf-273","category":"教學單位","unit":"教學單位","name":"營養實驗室","phone":"2508","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=590.71"},{"id":"pdf-274","category":"教學單位","unit":"教學單位","name":"黃啓彰","phone":"2409","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=590.71"},{"id":"pdf-275","category":"教學單位","unit":"教學單位","name":"邱炳坤","phone":"2429","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=590.71"},{"id":"pdf-276","category":"教學單位","unit":"教學單位","name":"陳志榮","phone":"2449","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=579.79"},{"id":"pdf-277","category":"教學單位","unit":"教學單位","name":"力學實驗室/黃聰育/郭晏綺","phone":"2505","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=580.27"},{"id":"pdf-278","category":"教學單位","unit":"教學單位","name":"陳光輝","phone":"2462","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=579.79"},{"id":"pdf-279","category":"教學單位","unit":"教學單位","name":"廖主民","phone":"8634","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=579.79"},{"id":"pdf-280","category":"教學單位","unit":"教學單位","name":"鄭世忠","phone":"2416","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=568.87"},{"id":"pdf-281","category":"教學單位","unit":"教學單位","name":"心理實驗室/陳雅鈴","phone":"2509","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=568.87"},{"id":"pdf-282","category":"教學單位","unit":"教學單位","name":"錢桂玉","phone":"2421","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=568.87"},{"id":"pdf-283","category":"教學單位","unit":"教學單位","name":"陳子軒","phone":"8619","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=568.87"},{"id":"pdf-284","category":"教學單位","unit":"教學單位","name":"林彥光","phone":"8618","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=557.95"},{"id":"pdf-285","category":"教學單位","unit":"教學單位","name":"運動能力診斷與訓練調整研究群","phone":"2110","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=557.95"},{"id":"pdf-286","category":"教學單位","unit":"教學單位","name":"許志文","phone":"8622","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=557.95"},{"id":"pdf-287","category":"教學單位","unit":"教學單位","name":"黃美瑤","phone":"8653","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=557.95"},{"id":"pdf-288","category":"教學單位","unit":"教學單位","name":"陳尹華","phone":"1351","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=547.03"},{"id":"pdf-289","category":"教學單位","unit":"教學單位","name":"徐藝洳","phone":"2430","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=547.03"},{"id":"pdf-290","category":"教學單位","unit":"教學單位","name":"牟鍾福","phone":"8615","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=547.03"},{"id":"pdf-291","category":"教學單位","unit":"教學單位","name":"張嘉澤","phone":"2426","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=536.11"},{"id":"pdf-292","category":"教學單位","unit":"教學單位","name":"張淳皓","phone":"2121","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=536.11"},{"id":"pdf-293","category":"教學單位","unit":"教學單位","name":"陳詩園","phone":"2404","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=525.19"},{"id":"pdf-294","category":"教學單位","unit":"教學單位","name":"彭涵妮","phone":"2102","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=525.19"},{"id":"pdf-295","category":"教學單位","unit":"教學單位","name":"運動教育學討論室","phone":"1521","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=525.19"},{"id":"pdf-296","category":"教學單位","unit":"教學單位","name":"陳成業","phone":"8609","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=525.19"},{"id":"pdf-297","category":"教學單位","unit":"教學單位","name":"林安廸組長","phone":"8563","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=525.19"},{"id":"pdf-298","category":"教學單位","unit":"教學單位","name":"楊雅婷","phone":"1312","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=514.27"},{"id":"pdf-299","category":"教學單位","unit":"教學單位","name":"運動社會學討論室","phone":"8305","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=514.27"},{"id":"pdf-300","category":"教學單位","unit":"教學單位","name":"陳龍弘","phone":"8654","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=514.27"},{"id":"pdf-301","category":"教學單位","unit":"教學單位","name":"運動心理學研究室","phone":"8406","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=503.33"},{"id":"pdf-302","category":"教學單位","unit":"教學單位","name":"研究實驗室","phone":"2307","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=492.41"},{"id":"pdf-303","category":"教學單位","unit":"教學單位","name":"運動社會學研究室","phone":"8407","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=492.41"},{"id":"pdf-304","category":"教學單位","unit":"教學單位","name":"歐俠宏","phone":"8608","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=492.41"},{"id":"pdf-305","category":"教學單位","unit":"教學單位","name":"陳琨義組長","phone":"8565","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=492.41"},{"id":"pdf-306","category":"教學單位","unit":"教學單位","name":"運動傷害防護研究室","phone":"3130","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=481.49"},{"id":"pdf-307","category":"教學單位","unit":"教學單位","name":"林駿傑","phone":"8658","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=481.49"},{"id":"pdf-308","category":"教學單位","unit":"教學單位","name":"3D動畫研究室","phone":"2612","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=470.57"},{"id":"pdf-309","category":"教學單位","unit":"教學單位","name":"運動科技實驗室","phone":"2507","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=459.65"},{"id":"pdf-310","category":"教學單位","unit":"教學單位","name":"王凱立","phone":"8610","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=459.65"},{"id":"pdf-311","category":"教學單位","unit":"教學單位","name":"數位學習研究室","phone":"2630","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=448.73"},{"id":"pdf-312","category":"教學單位","unit":"教學單位","name":"黃雲龍","phone":"8659","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=448.73"},{"id":"pdf-313","category":"教學單位","unit":"教學單位","name":"運動生化實驗室/李孟謙","phone":"2604","note":"","source":"PDF 第2頁","coordinate":"x=440.69, y=438.17"},{"id":"pdf-314","category":"教學單位","unit":"教學單位","name":"運動生理實驗室","phone":"2618/2620","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=426.65"},{"id":"pdf-315","category":"教學單位","unit":"教學單位","name":"傳真","phone":"328-0593","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=390.53"},{"id":"pdf-316","category":"教學單位","unit":"教學單位","name":"傳真","phone":"328-0609","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=390.53"},{"id":"pdf-317","category":"教學單位","unit":"教學單位","name":"傳真","phone":"327-2401","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=390.53"},{"id":"pdf-318","category":"教學單位","unit":"教學單位","name":"傳真","phone":"328-0613","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=390.53"},{"id":"pdf-319","category":"教學單位","unit":"教學單位","name":"傳真","phone":"328-0608","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=390.53"},{"id":"pdf-320","category":"教學單位","unit":"教學單位","name":"傳真","phone":"328-0595","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=390.53"},{"id":"pdf-321","category":"教學單位","unit":"教學單位","name":"專線","phone":"327-2937","note":"","source":"PDF 第2頁","coordinate":"x=758.23, y=390.53"},{"id":"pdf-322","category":"教學單位","unit":"教學單位","name":"傳真","phone":"328-8842","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=390.53"},{"id":"pdf-323","category":"教學單位","unit":"教學單位","name":"專線電話","phone":"397-4933","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=390.53"},{"id":"pdf-324","category":"教學單位","unit":"教學單位","name":"洪靜如","phone":"2220","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=356.69"},{"id":"pdf-325","category":"教學單位","unit":"教學單位","name":"陳旻旋","phone":"2201","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=356.69"},{"id":"pdf-326","category":"教學單位","unit":"教學單位","name":"葉貞伶","phone":"2223","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=356.69"},{"id":"pdf-327","category":"教學單位","unit":"教學單位","name":"林泉寶","phone":"2217","note":"","source":"PDF 第2頁","coordinate":"x=355.13, y=356.69"},{"id":"pdf-328","category":"教學單位","unit":"教學單位","name":"林孟蓁","phone":"2306","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=356.69"},{"id":"pdf-329","category":"教學單位","unit":"教學單位","name":"陳斯藍","phone":"8522","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=356.69"},{"id":"pdf-330","category":"教學單位","unit":"教學單位","name":"林怡汝","phone":"8513","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=356.69"},{"id":"pdf-331","category":"教學單位","unit":"教學單位","name":"陳凱銘","phone":"8525","note":"","source":"PDF 第2頁","coordinate":"x=758.23, y=356.69"},{"id":"pdf-332","category":"教學單位","unit":"教學單位","name":"嚴雅馨","phone":"8554","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=356.69"},{"id":"pdf-333","category":"教學單位","unit":"教學單位","name":"巧文","phone":"8571","note":"","source":"PDF 第2頁","coordinate":"x=974.38, y=356.45"},{"id":"pdf-334","category":"教學單位","unit":"教學單位","name":"張永政","phone":"2458","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=345.77"},{"id":"pdf-335","category":"教學單位","unit":"教學單位","name":"李亞妮","phone":"2204","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=345.77"},{"id":"pdf-336","category":"教學單位","unit":"教學單位","name":"辦公室","phone":"2225","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=345.77"},{"id":"pdf-337","category":"教學單位","unit":"教學單位","name":"黃頌緹","phone":"2216","note":"","source":"PDF 第2頁","coordinate":"x=355.13, y=345.77"},{"id":"pdf-338","category":"教學單位","unit":"教學單位","name":"黃啟煌","phone":"2436","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=345.77"},{"id":"pdf-339","category":"教學單位","unit":"教學單位","name":"朱彥穎","phone":"8624","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=345.77"},{"id":"pdf-340","category":"教學單位","unit":"教學單位","name":"許裴軒","phone":"8515","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=345.77"},{"id":"pdf-341","category":"教學單位","unit":"教學單位","name":"楊承蓉","phone":"8525","note":"","source":"PDF 第2頁","coordinate":"x=758.23, y=345.77"},{"id":"pdf-342","category":"教學單位","unit":"教學單位","name":"葉公鼎","phone":"8605","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=345.77"},{"id":"pdf-343","category":"教學單位","unit":"教學單位","name":"王國慧/柯綿綿","phone":"2442","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=334.82"},{"id":"pdf-344","category":"教學單位","unit":"教學單位","name":"杜美華","phone":"2422","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=334.82"},{"id":"pdf-345","category":"教學單位","unit":"教學單位","name":"辦公室","phone":"2226","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=334.82"},{"id":"pdf-346","category":"教學單位","unit":"教學單位","name":"林高正","phone":"2217","note":"","source":"PDF 第2頁","coordinate":"x=355.13, y=334.82"},{"id":"pdf-347","category":"教學單位","unit":"教學單位","name":"張曉昀","phone":"2141","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=334.82"},{"id":"pdf-348","category":"教學單位","unit":"教學單位","name":"王瑱瑄","phone":"8631","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=334.82"},{"id":"pdf-349","category":"教學單位","unit":"教學單位","name":"黃永旺","phone":"8611","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=334.82"},{"id":"pdf-350","category":"教學單位","unit":"教學單位","name":"鴻宗穎","phone":"8603","note":"","source":"PDF 第2頁","coordinate":"x=758.23, y=334.82"},{"id":"pdf-351","category":"教學單位","unit":"教學單位","name":"吳冠璋","phone":"8601","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=334.82"},{"id":"pdf-352","category":"教學單位","unit":"教學單位","name":"王嵐萱","phone":"8573","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=334.82"},{"id":"pdf-353","category":"教學單位","unit":"教學單位","name":"廖學松","phone":"2443","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=323.90"},{"id":"pdf-354","category":"教學單位","unit":"教學單位","name":"龔榮堂","phone":"8623","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=323.90"},{"id":"pdf-355","category":"教學單位","unit":"教學單位","name":"張榮三","phone":"2427","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=323.90"},{"id":"pdf-356","category":"教學單位","unit":"教學單位","name":"官銓輿","phone":"1353","note":"","source":"PDF 第2頁","coordinate":"x=355.13, y=323.90"},{"id":"pdf-357","category":"教學單位","unit":"教學單位","name":"林晋利","phone":"2419","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=323.90"},{"id":"pdf-358","category":"教學單位","unit":"教學單位","name":"周禾程","phone":"8636","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=323.90"},{"id":"pdf-359","category":"教學單位","unit":"教學單位","name":"黃永寬","phone":"8657","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=323.90"},{"id":"pdf-360","category":"教學單位","unit":"教學單位","name":"石國棟","phone":"1201","note":"","source":"PDF 第2頁","coordinate":"x=758.23, y=323.90"},{"id":"pdf-361","category":"教學單位","unit":"教學單位","name":"葉怡矜","phone":"8606","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=323.90"},{"id":"pdf-362","category":"教學單位","unit":"教學單位","name":"翁綺","phone":"8575","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=323.66"},{"id":"pdf-363","category":"教學單位","unit":"教學單位","name":"蔣明雄","phone":"2413","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=312.98"},{"id":"pdf-364","category":"教學單位","unit":"教學單位","name":"宋定衡","phone":"2414","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=312.98"},{"id":"pdf-365","category":"教學單位","unit":"教學單位","name":"湯惠婷","phone":"2412","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=312.98"},{"id":"pdf-366","category":"教學單位","unit":"教學單位","name":"林明靜","phone":"1202","note":"","source":"PDF 第2頁","coordinate":"x=355.13, y=312.98"},{"id":"pdf-367","category":"教學單位","unit":"教學單位","name":"陳麗華","phone":"2435","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=312.98"},{"id":"pdf-368","category":"教學單位","unit":"教學單位","name":"李偉清","phone":"8639","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=312.98"},{"id":"pdf-369","category":"教學單位","unit":"教學單位","name":"李陳鴻","phone":"8621","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=312.98"},{"id":"pdf-370","category":"教學單位","unit":"教學單位","name":"周宇輝","phone":"8612","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=312.98"},{"id":"pdf-371","category":"教學單位","unit":"教學單位","name":"蔡芝亭","phone":"8576","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=312.98"},{"id":"pdf-372","category":"教學單位","unit":"教學單位","name":"陳淑枝","phone":"2222","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=302.06"},{"id":"pdf-373","category":"教學單位","unit":"教學單位","name":"李洋","phone":"2410","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=302.06"},{"id":"pdf-374","category":"教學單位","unit":"教學單位","name":"侯碧燕","phone":"2448","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=302.06"},{"id":"pdf-375","category":"教學單位","unit":"教學單位","name":"陳雅琳","phone":"2411","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=302.06"},{"id":"pdf-376","category":"教學單位","unit":"教學單位","name":"范姜昕辰","phone":"8614","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=302.06"},{"id":"pdf-377","category":"教學單位","unit":"教學單位","name":"李再立","phone":"8662","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=302.06"},{"id":"pdf-378","category":"教學單位","unit":"教學單位","name":"王俊杰","phone":"8637","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=302.06"},{"id":"pdf-379","category":"教學單位","unit":"教學單位","name":"張詩涵","phone":"8578","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=302.06"},{"id":"pdf-380","category":"教學單位","unit":"教學單位","name":"林政賢","phone":"1382","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=291.14"},{"id":"pdf-381","category":"教學單位","unit":"教學單位","name":"鄭誠諒","phone":"2202","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=291.14"},{"id":"pdf-382","category":"教學單位","unit":"教學單位","name":"江杰穎","phone":"2104","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=291.14"},{"id":"pdf-383","category":"教學單位","unit":"教學單位","name":"張維綱","phone":"2405","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=291.14"},{"id":"pdf-384","category":"教學單位","unit":"教學單位","name":"陳惠雅","phone":"8625","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=291.14"},{"id":"pdf-385","category":"教學單位","unit":"教學單位","name":"楊宗文","phone":"8656","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=291.14"},{"id":"pdf-386","category":"教學單位","unit":"教學單位","name":"江亦瑄","phone":"1352","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=291.14"},{"id":"pdf-387","category":"教學單位","unit":"教學單位","name":"呂景義","phone":"2222","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=280.22"},{"id":"pdf-388","category":"教學單位","unit":"教學單位","name":"蕭丞邑","phone":"2434","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=280.22"},{"id":"pdf-389","category":"教學單位","unit":"教學單位","name":"朱木炎","phone":"2408","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=280.22"},{"id":"pdf-390","category":"教學單位","unit":"教學單位","name":"鄭鴻衛","phone":"2311","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=280.22"},{"id":"pdf-391","category":"教學單位","unit":"教學單位","name":"林岑怡","phone":"8628","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=280.22"},{"id":"pdf-392","category":"教學單位","unit":"教學單位","name":"陳月娥","phone":"8642","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=280.22"},{"id":"pdf-393","category":"教學單位","unit":"教學單位","name":"吳裕勝","phone":"8638","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=280.22"},{"id":"pdf-394","category":"教學單位","unit":"教學單位","name":"陳葦綾","phone":"2220","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=269.30"},{"id":"pdf-395","category":"教學單位","unit":"教學單位","name":"桑茂森","phone":"8627","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=269.30"},{"id":"pdf-396","category":"教學單位","unit":"教學單位","name":"陳秋燕/曾婕恩","phone":"2438","note":"","source":"PDF 第2頁","coordinate":"x=255.02, y=269.66"},{"id":"pdf-397","category":"教學單位","unit":"教學單位","name":"楊孟容","phone":"1301","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=269.30"},{"id":"pdf-398","category":"教學單位","unit":"教學單位","name":"李秀華","phone":"8655","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=269.30"},{"id":"pdf-399","category":"教學單位","unit":"教學單位","name":"吳蕙如","phone":"2440","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=269.30"},{"id":"pdf-400","category":"教學單位","unit":"教學單位","name":"林育信","phone":"2222","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=258.38"},{"id":"pdf-401","category":"教學單位","unit":"教學單位","name":"劉宸碩","phone":"1355","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=258.38"},{"id":"pdf-402","category":"教學單位","unit":"教學單位","name":"張政偉","phone":"2439","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=258.38"},{"id":"pdf-403","category":"教學單位","unit":"教學單位","name":"李彩雲","phone":"8660","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=258.38"},{"id":"pdf-404","category":"教學單位","unit":"教學單位","name":"盧彥廷","phone":"2103","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=246.86"},{"id":"pdf-405","category":"教學單位","unit":"教學單位","name":"廖家興","phone":"1354","note":"","source":"PDF 第2頁","coordinate":"x=255.26, y=246.86"},{"id":"pdf-406","category":"教學單位","unit":"教學單位","name":"李敏華","phone":"2466","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=246.86"},{"id":"pdf-407","category":"教學單位","unit":"教學單位","name":"謝奇穎","phone":"8617","note":"","source":"PDF 第2頁","coordinate":"x=37.32, y=235.46"},{"id":"pdf-408","category":"教學單位","unit":"教學單位","name":"黃俊溢","phone":"8643","note":"","source":"PDF 第2頁","coordinate":"x=150.26, y=235.46"},{"id":"pdf-409","category":"教學單位","unit":"教學單位","name":"張芮語","phone":"8602","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=235.46"},{"id":"pdf-410","category":"教學單位","unit":"教學單位","name":"黃三峰","phone":"8641","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=224.54"},{"id":"pdf-411","category":"教學單位","unit":"教學單位","name":"鍾阮鳳","phone":"8552","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=213.62"},{"id":"pdf-412","category":"教學單位","unit":"教學單位","name":"謝宜諺","phone":"8432","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=202.46"},{"id":"pdf-413","category":"教學單位","unit":"教學單位","name":"楊薇玉","phone":"8432","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=191.06"},{"id":"pdf-414","category":"教學單位","unit":"教學單位","name":"專線","phone":"327-7739","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=179.54"},{"id":"pdf-415","category":"教學單位","unit":"教學單位","name":"李靜婷","phone":"8523","note":"","source":"PDF 第2頁","coordinate":"x=576.41, y=179.54"},{"id":"pdf-416","category":"教學單位","unit":"教學單位","name":"林佳儀","phone":"8518","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=179.54"},{"id":"pdf-417","category":"教學單位","unit":"教學單位","name":"程馨卉","phone":"8432","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=179.54"},{"id":"pdf-418","category":"教學單位","unit":"教學單位","name":"程馨卉","phone":"1524","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=179.54"},{"id":"pdf-419","category":"教學單位","unit":"教學單位","name":"體適能櫃台","phone":"2017","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=168.48"},{"id":"pdf-420","category":"教學單位","unit":"教學單位","name":"簡鈺蓉","phone":"8518","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=168.48"},{"id":"pdf-421","category":"教學單位","unit":"教學單位","name":"韋純昕","phone":"8432","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=168.48"},{"id":"pdf-422","category":"教學單位","unit":"教學單位","name":"韋純昕","phone":"396-0154","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=168.48"},{"id":"pdf-423","category":"教學單位","unit":"教學單位","name":"紓壓室","phone":"2019","note":"","source":"PDF 第2頁","coordinate":"x=440.93, y=157.56"},{"id":"pdf-424","category":"教學單位","unit":"教學單位","name":"羅煜勛","phone":"8432","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=157.56"},{"id":"pdf-425","category":"教學單位","unit":"教學單位","name":"周宏室","phone":"1521","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=157.56"},{"id":"pdf-426","category":"教學單位","unit":"教學單位","name":"鄭士淮","phone":"8518","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=146.64"},{"id":"pdf-427","category":"教學單位","unit":"教學單位","name":"淑卿","phone":"8552","note":"","source":"PDF 第2頁","coordinate":"x=855.07, y=146.40"},{"id":"pdf-428","category":"教學單位","unit":"教學單位","name":"袁愈光","phone":"1525","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=146.64"},{"id":"pdf-429","category":"教學單位","unit":"教學單位","name":"劉稚杰","phone":"8518","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=135.72"},{"id":"pdf-430","category":"教學單位","unit":"教學單位","name":"趙瑋","phone":"8552","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=135.72"},{"id":"pdf-431","category":"教學單位","unit":"教學單位","name":"行政307","phone":"1351","note":"","source":"PDF 第2頁","coordinate":"x=965.62, y=135.72"},{"id":"pdf-432","category":"教學單位","unit":"教學單位","name":"李昀儒","phone":"8519","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=113.88"},{"id":"pdf-433","category":"教學單位","unit":"教學單位","name":"陳彥文","phone":"8519","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=102.96"},{"id":"pdf-434","category":"教學單位","unit":"教學單位","name":"施靜琪","phone":"8504","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=102.96"},{"id":"pdf-435","category":"教學單位","unit":"教學單位","name":"陳淑女","phone":"8504","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=92.04"},{"id":"pdf-436","category":"教學單位","unit":"教學單位","name":"張茹婷","phone":"8519","note":"","source":"PDF 第2頁","coordinate":"x=673.87, y=81.24"},{"id":"pdf-437","category":"教學單位","unit":"教學單位","name":"陳昱嘉","phone":"1568","note":"","source":"PDF 第2頁","coordinate":"x=846.31, y=81.24"}];
 
     const $ = (id) => document.getElementById(id);
-    const form = $("recordForm");
-    const body = $("recordBody");
-    const emptyState = $("emptyState");
-    const searchInput = $("searchInput");
-    const departmentFilter = $("departmentFilter");
-
+    let activeCategory = "行政單位";
     let records = loadRecords();
-
-    function seedRecords() {
-      return seedCsv.trim().split("\n").map((line, index) => {
-        const [department, name, phone, source] = line.split("|");
-        return {
-          id: `seed-${index + 1}`,
-          department,
-          name,
-          phone,
-          source,
-          note: ""
-        };
-      });
-    }
 
     function loadRecords() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) {
-        const initial = seedRecords();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
-        return initial;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seedRecords));
+        return [...seedRecords];
       }
       try {
         const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : seedRecords();
+        return Array.isArray(parsed) ? parsed : [...seedRecords];
       } catch {
-        return seedRecords();
+        return [...seedRecords];
       }
     }
 
-    function saveRecords() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    function saveRecords() { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }
+    function escapeHtml(value) {
+      return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+    function normalize(value) { return String(value || "").trim().toLowerCase(); }
+
+    function categoryCount(category) { return records.filter((record) => record.category === category).length; }
+    function unitsForActiveCategory() {
+      return [...new Set(records.filter((record) => record.category === activeCategory).map((record) => record.unit).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, "zh-Hant"));
     }
 
-    function normalize(value) {
-      return String(value || "").trim().toLowerCase();
-    }
-
-    function getFilteredRecords() {
-      const query = normalize(searchInput.value);
-      const dept = departmentFilter.value;
-      return records.filter((record) => {
-        const matchDept = !dept || record.department === dept;
-        const haystack = [record.department, record.name, record.phone, record.source, record.note].join(" ").toLowerCase();
-        return matchDept && (!query || haystack.includes(query));
+    function filteredRecords() {
+      const query = normalize($("searchInput").value);
+      const unit = $("unitFilter").value;
+      const sortMode = $("sortSelect").value;
+      const filtered = records.filter((record) => {
+        if (record.category !== activeCategory) return false;
+        if (unit && record.unit !== unit) return false;
+        const haystack = [record.category, record.unit, record.name, record.phone, record.note, record.source, record.coordinate].join(" ").toLowerCase();
+        return !query || haystack.includes(query);
+      });
+      return filtered.sort((a, b) => {
+        if (sortMode === "name") return a.name.localeCompare(b.name, "zh-Hant");
+        if (sortMode === "phone") return a.phone.localeCompare(b.phone, "zh-Hant", { numeric: true });
+        return Number(a.id.replace(/\D/g, "")) - Number(b.id.replace(/\D/g, ""));
       });
     }
 
-    function getDepartments() {
-      return [...new Set(records.map((record) => record.department).filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
+    function renderTabs() {
+      document.querySelectorAll(".tab").forEach((tab) => {
+        const selected = tab.dataset.category === activeCategory;
+        tab.setAttribute("aria-selected", String(selected));
+      });
+      document.documentElement.style.setProperty("--active", activeCategory === "行政單位" ? "var(--admin)" : "var(--teach)");
+      document.documentElement.style.setProperty("--active-soft", activeCategory === "行政單位" ? "#e7f3ef" : "#eaf0fa");
     }
 
     function renderFilters() {
-      const current = departmentFilter.value;
-      const departments = getDepartments();
-      departmentFilter.innerHTML = '<option value="">全部單位</option>' + departments.map((department) => (
-        `<option value="${escapeHtml(department)}">${escapeHtml(department)}</option>`
-      )).join("");
-      departmentFilter.value = departments.includes(current) ? current : "";
-      $("departmentOptions").innerHTML = departments.map((department) => (
-        `<option value="${escapeHtml(department)}"></option>`
-      )).join("");
+      const currentUnit = $("unitFilter").value;
+      const units = unitsForActiveCategory();
+      $("unitFilter").innerHTML = '<option value="">全部群組</option>' + units.map((unit) => `<option value="${escapeHtml(unit)}">${escapeHtml(unit)}</option>`).join("");
+      $("unitFilter").value = units.includes(currentUnit) ? currentUnit : "";
+      $("unitOptions").innerHTML = units.map((unit) => `<option value="${escapeHtml(unit)}"></option>`).join("");
     }
 
-    function render() {
-      renderFilters();
-      const filtered = getFilteredRecords();
-      $("totalCount").textContent = records.length;
-      $("matchCount").textContent = filtered.length;
-      $("deptCount").textContent = getDepartments().length;
-      emptyState.hidden = filtered.length > 0;
-      body.innerHTML = filtered.map((record) => `
+    function renderTable() {
+      const rows = filteredRecords();
+      $("matchCount").textContent = rows.length;
+      $("emptyState").hidden = rows.length > 0;
+      $("recordBody").innerHTML = rows.map((record) => `
         <tr>
-          <td><span class="tag" title="${escapeHtml(record.department)}">${escapeHtml(record.department)}</span></td>
+          <td><span class="pill ${record.category === "教學單位" ? "teach" : ""}">${escapeHtml(record.category)}</span></td>
+          <td>${escapeHtml(record.unit)}</td>
           <td>${escapeHtml(record.name)}</td>
-          <td class="number">${escapeHtml(record.phone)}</td>
-          <td class="muted">${escapeHtml(record.source || "")}</td>
-          <td class="muted">${escapeHtml(record.note || "")}</td>
-          <td>
-            <div class="table-actions">
-              <button class="secondary" type="button" data-action="edit" data-id="${record.id}">修改</button>
-              <button class="danger" type="button" data-action="delete" data-id="${record.id}">刪除</button>
-            </div>
-          </td>
+          <td class="phone">${escapeHtml(record.phone)}</td>
+          <td class="muted">${escapeHtml(record.source)}</td>
+          <td class="muted">${escapeHtml(record.note || record.coordinate || "")}</td>
+          <td><div class="row-actions">
+            <button class="btn secondary" type="button" data-action="edit" data-id="${record.id}">修改</button>
+            <button class="btn danger" type="button" data-action="delete" data-id="${record.id}">刪除</button>
+          </div></td>
         </tr>
       `).join("");
     }
 
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function renderMetrics() {
+      const admin = categoryCount("行政單位");
+      const teach = categoryCount("教學單位");
+      $("totalCount").textContent = records.length;
+      $("adminCount").textContent = admin;
+      $("teachCount").textContent = teach;
+      $("adminTabCount").textContent = admin;
+      $("teachTabCount").textContent = teach;
+    }
+
+    function render() {
+      renderTabs();
+      renderMetrics();
+      renderFilters();
+      renderTable();
+      $("formMode").textContent = $("recordId").value ? "編輯中" : activeCategory;
     }
 
     function resetForm() {
-      form.reset();
+      $("recordForm").reset();
       $("recordId").value = "";
-      $("formTitle").textContent = "新增資料";
-      $("editHint").textContent = "新增模式";
+      $("category").value = activeCategory;
+      $("unit").value = activeCategory;
+      $("source").value = activeCategory === "行政單位" ? "PDF 第1頁" : "PDF 第2頁";
+      $("formTitle").textContent = "新增分機";
       $("saveButton").textContent = "新增";
-      $("department").focus();
+      $("formMode").textContent = activeCategory;
     }
 
     function fillForm(record) {
+      activeCategory = record.category;
       $("recordId").value = record.id;
-      $("department").value = record.department;
+      $("category").value = record.category;
+      $("unit").value = record.unit;
       $("name").value = record.name;
       $("phone").value = record.phone;
       $("source").value = record.source || "";
-      $("note").value = record.note || "";
-      $("formTitle").textContent = "修改資料";
-      $("editHint").textContent = `編輯：${record.name}`;
+      $("note").value = record.note || record.coordinate || "";
+      $("formTitle").textContent = "修改分機";
       $("saveButton").textContent = "儲存修改";
+      render();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    form.addEventListener("submit", (event) => {
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        activeCategory = tab.dataset.category;
+        $("unitFilter").value = "";
+        resetForm();
+        render();
+      });
+    });
+
+    $("recordForm").addEventListener("submit", (event) => {
       event.preventDefault();
       const id = $("recordId").value;
-      const nextRecord = {
+      const next = {
         id: id || `rec-${Date.now()}`,
-        department: $("department").value.trim(),
+        category: $("category").value,
+        unit: $("unit").value.trim(),
         name: $("name").value.trim(),
         phone: $("phone").value.trim(),
         source: $("source").value.trim(),
-        note: $("note").value.trim()
+        note: $("note").value.trim(),
+        coordinate: ""
       };
       if (id) {
-        records = records.map((record) => record.id === id ? nextRecord : record);
+        records = records.map((record) => record.id === id ? next : record);
       } else {
-        records = [nextRecord, ...records];
+        records = [next, ...records];
       }
+      activeCategory = next.category;
       saveRecords();
       resetForm();
       render();
     });
 
-    $("clearButton").addEventListener("click", resetForm);
-
-    $("resetButton").addEventListener("click", () => {
-      if (!confirm("確定要還原 PDF 初始資料？目前新增或修改的資料會被覆蓋。")) return;
-      records = seedRecords();
-      saveRecords();
-      resetForm();
-      render();
-    });
-
-    $("exportButton").addEventListener("click", () => {
-      const blob = new Blob([JSON.stringify(records, null, 2)], { type: "application/json;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "11504-phone-records.json";
-      link.click();
-      URL.revokeObjectURL(url);
-    });
-
-    body.addEventListener("click", (event) => {
+    $("recordBody").addEventListener("click", (event) => {
       const button = event.target.closest("button[data-action]");
       if (!button) return;
       const record = records.find((item) => item.id === button.dataset.id);
       if (!record) return;
-      if (button.dataset.action === "edit") {
-        fillForm(record);
-      }
+      if (button.dataset.action === "edit") fillForm(record);
       if (button.dataset.action === "delete") {
         if (!confirm(`確定刪除「${record.name}」？`)) return;
         records = records.filter((item) => item.id !== record.id);
@@ -657,9 +425,28 @@
       }
     });
 
-    searchInput.addEventListener("input", render);
-    departmentFilter.addEventListener("change", render);
+    $("clearButton").addEventListener("click", resetForm);
+    $("resetButton").addEventListener("click", () => {
+      if (!confirm("確定還原為 PDF 轉出的行政/教學初始資料？目前修改會被覆蓋。")) return;
+      records = [...seedRecords];
+      activeCategory = "行政單位";
+      saveRecords();
+      resetForm();
+      render();
+    });
+    $("exportButton").addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(records, null, 2)], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "11504-admin-teaching-extensions.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+    ["searchInput", "unitFilter", "sortSelect"].forEach((id) => $(id).addEventListener("input", render));
+    $("category").addEventListener("change", () => { $("formMode").textContent = $("category").value; });
 
+    resetForm();
     render();
   </script>
 </body>
