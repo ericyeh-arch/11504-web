@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>11504 電話資料管理</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7f6;
+      --panel: #ffffff;
+      --ink: #17211d;
+      --muted: #66736d;
+      --line: #dce4df;
+      --strong: #0b5d4d;
+      --strong-2: #0f7663;
+      --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --soft: #eaf3ef;
+      --focus: #2a8f7a;
+      --shadow: 0 16px 40px rgba(21, 35, 31, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", sans-serif;
+      font-size: 15px;
+    }
+
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(110px, 1fr));
+      gap: 8px;
+      min-width: 330px;
+    }
+
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 6px 18px rgba(21, 35, 31, .04);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 20px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .form-panel {
+      padding: 16px;
+      position: sticky;
+      top: 16px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      color: #2d3934;
+      font-weight: 650;
+      font-size: 13px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #cbd8d2;
+      border-radius: 6px;
+      padding: 9px 10px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 76px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px rgba(42, 143, 122, .15);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      min-height: 38px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      background: #fff;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .primary {
+      background: var(--strong);
+      color: #fff;
+    }
+
+    .primary:hover { background: var(--strong-2); }
+    .secondary { border-color: #c9d8d1; }
+    .secondary:hover { background: var(--soft); }
+    .danger {
+      color: var(--danger);
+      border-color: #ffd0cb;
+      background: var(--danger-bg);
+    }
+
+    .table-panel {
+      overflow: hidden;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 190px 120px;
+      gap: 10px;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfb;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: calc(100vh - 210px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #eef5f1;
+      color: #273630;
+      font-size: 13px;
+    }
+
+    tbody tr:hover { background: #f8fbf9; }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      max-width: 180px;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 3px 9px;
+      background: var(--soft);
+      color: #17463b;
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .number {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 700;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .table-actions button {
+      min-height: 32px;
+      padding: 6px 9px;
+      font-size: 13px;
+    }
+
+    .empty {
+      padding: 36px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    @media (max-width: 920px) {
+      .app { padding: 16px; }
+      header {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .summary { min-width: 0; }
+      .layout { grid-template-columns: 1fr; }
+      .form-panel { position: static; }
+      .toolbar { grid-template-columns: 1fr; }
+      .table-wrap { max-height: none; }
+    }
+
+    @media (max-width: 560px) {
+      .summary { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>11504 電話資料管理</h1>
+        <div class="subtitle">依桌面 11504.pdf 建立，可查詢、新增、修改、刪除。資料儲存在此瀏覽器。</div>
+      </div>
+      <section class="summary" aria-label="資料統計">
+        <div class="metric"><span>目前筆數</span><strong id="totalCount">0</strong></div>
+        <div class="metric"><span>符合查詢</span><strong id="matchCount">0</strong></div>
+        <div class="metric"><span>單位數</span><strong id="deptCount">0</strong></div>
+      </section>
+    </header>
+
+    <section class="layout">
+      <form class="panel form-panel" id="recordForm">
+        <div class="panel-title">
+          <h2 id="formTitle">新增資料</h2>
+          <span class="muted" id="editHint">新增模式</span>
+        </div>
+        <input type="hidden" id="recordId">
+
+        <label for="department">單位 / 分類</label>
+        <input id="department" list="departmentOptions" required placeholder="例如：校長室、教務處">
+        <datalist id="departmentOptions"></datalist>
+
+        <label for="name">姓名 / 職掌名稱</label>
+        <input id="name" required placeholder="例如：邱炳坤校長、服務專線">
+
+        <div class="row">
+          <div>
+            <label for="phone">分機 / 電話</label>
+            <input id="phone" required placeholder="例如：1608 或 328-1755">
+          </div>
+          <div>
+            <label for="source">來源</label>
+            <input id="source" placeholder="例如：PDF 第1頁">
+          </div>
+        </div>
+
+        <label for="note">備註</label>
+        <textarea id="note" placeholder="可填樓層、承辦範圍或其他說明"></textarea>
+
+        <div class="actions">
+          <button class="primary" type="submit" id="saveButton">新增</button>
+          <button class="secondary" type="button" id="clearButton">清除</button>
+          <button class="danger" type="button" id="resetButton">還原 PDF 初始資料</button>
+        </div>
+      </form>
+
+      <section class="panel table-panel">
+        <div class="toolbar">
+          <input id="searchInput" type="search" placeholder="查詢單位、姓名、分機、電話、備註">
+          <select id="departmentFilter" aria-label="依單位篩選">
+            <option value="">全部單位</option>
+          </select>
+          <button class="secondary" type="button" id="exportButton">匯出 JSON</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>單位 / 分類</th>
+                <th>姓名 / 職掌名稱</th>
+                <th>分機 / 電話</th>
+                <th>來源</th>
+                <th>備註</th>
+                <th style="text-align:right;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="recordBody"></tbody>
+          </table>
+          <div class="empty" id="emptyState" hidden>沒有符合條件的資料</div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "ntsu-11504-phone-records";
+    const seedCsv = `校長室|專線電話|328-1755|PDF 第1頁
+校長室|邱炳坤校長|1608|PDF 第1頁
+校長室|校長室|1610|PDF 第1頁
+校長室|黃明麗|1619|PDF 第1頁
+副校長室|黃東治副校長|1606|PDF 第1頁
+副校長室|陳國儀副校長|1688|PDF 第1頁
+副校長室|黃錫秋|1658|PDF 第1頁
+秘書室|陳成業主任秘書|1616|PDF 第1頁
+秘書室|郭婉伶專門委員|1614|PDF 第1頁
+秘書室|許玉釵|1615|PDF 第1頁
+秘書室|呂紹源|1617|PDF 第1頁
+秘書室|黃織錦|1662|PDF 第1頁
+學生事務處|湯惠婷學務長|1509|PDF 第1頁
+學生事務處|學務處辦公室|1512|PDF 第1頁
+學生事務處|楊孟容主任|1301|PDF 第1頁
+學生事務處|游韻如|1302|PDF 第1頁
+學生事務處|劉逸晉|1303|PDF 第1頁
+學生事務處|蘇偉誠|1307|PDF 第1頁
+學生事務處|宿舍管理中心|6111|PDF 第1頁
+學生事務處|校安專線|0965-000501|PDF 第1頁
+教務處|黃東治教務長|1503|PDF 第1頁
+教務處|陳月娥副教務長|1513|PDF 第1頁
+教務處|李彩鳳組長|1593|PDF 第1頁
+教務處|蔡玫君組長|1581|PDF 第1頁
+教務處|殷家婷組長|1528|PDF 第1頁
+教務處|專用教室|8537|PDF 第1頁
+總務處|王翔星總務長|1603|PDF 第1頁
+總務處|邱慧玲專門委員|1607|PDF 第1頁
+總務處|陳正霖組長|1101|PDF 第1頁
+總務處|鍾權淇組長|1151|PDF 第1頁
+總務處|吳宗錫|1152|PDF 第1頁
+總務處|郭原宏|1153|PDF 第1頁
+總務處|水電|1092|PDF 第1頁
+總務處|行政大樓警勤室|1106|PDF 第1頁
+圖書暨體育博物館|密集書庫|6101|PDF 第1頁
+圖書暨體育博物館|陳珈宏組長|6205|PDF 第1頁
+圖書暨體育博物館|期刊室|6301|PDF 第1頁
+圖書暨體育博物館|3樓櫃台|6302|PDF 第1頁
+圖書暨體育博物館|資訊機房|6303|PDF 第1頁
+圖書暨體育博物館|黃永旺館長|6401|PDF 第1頁
+體育處|范姜昕辰體育長|5005|PDF 第1頁
+體育處|場館經營暨體育活動組|5005|PDF 第1頁
+體育處|孫嘉穗(室內外網球場)|5001|PDF 第1頁
+體育處|張瑜庭(綜合體育館)|5002|PDF 第1頁
+體育處|郭倩如(籃球、排球、桌球)|5016|PDF 第1頁
+體育處|梁怡婷(田徑場、足球場)|5019|PDF 第1頁
+體育處|貴賓室|7101|PDF 第1頁
+體育處|重量訓練室|7103|PDF 第1頁
+進修推廣部|黃永寬部主任|8101|PDF 第1頁
+進修推廣部|服務專線|397-1574|PDF 第1頁
+進修推廣部|王俊杰 活動組組長|8102|PDF 第1頁
+進修推廣部|官銓輿 推廣組組長|8103|PDF 第1頁
+進修推廣部|李敏華 進修組組長|8104|PDF 第1頁
+進修推廣部|陳彥如|8105|PDF 第1頁
+進修推廣部|林璟雯|8106|PDF 第1頁
+進修推廣部|張凱婷|8108|PDF 第1頁
+體育學院|院長 王凱立|8504|PDF 第2頁
+體育學院|體育研究所|8505|PDF 第2頁
+體育學院|湯穎筑|8503|PDF 第2頁
+體育學院|陳成業|8609|PDF 第2頁
+體育學院|陳龍弘|8654|PDF 第2頁
+體育學院|歐俠宏|8608|PDF 第2頁
+體育學院|林駿傑|8658|PDF 第2頁
+運動與健康科學學院|院長 陳光輝|2305|PDF 第2頁
+運動與健康科學學院|運動科學研究所|2301|PDF 第2頁
+運動與健康科學學院|徐藝洳|2619|PDF 第2頁
+運動與健康科學學院|何金山|2425|PDF 第2頁
+運動與健康科學學院|黃啓彰|2409|PDF 第2頁
+運動與健康科學學院|陳光輝|2462|PDF 第2頁
+運動與健康科學學院|運動生理實驗室|2618/2620|PDF 第2頁
+競技學院|院長 湯文慈|2212|PDF 第2頁
+競技學院|林孟儒|2512|PDF 第2頁
+競技學院|湯文慈|2407|PDF 第2頁
+競技學院|詹貴惠|2423|PDF 第2頁
+競技學院|陳志榮|2449|PDF 第2頁
+競技學院|鄭世忠|2416|PDF 第2頁
+競技學院|林彥光|8618|PDF 第2頁
+教學單位|陸上運動技術學系|2211|PDF 第2頁
+教學單位|球類運動技術學系|2205|PDF 第2頁
+教學單位|技擊運動技術學系|2221|PDF 第2頁
+教學單位|運動保健學系|2301|PDF 第2頁
+教學單位|適應體育學系(圍棋)|8521|PDF 第2頁
+教學單位|體育推廣學系|8511|PDF 第2頁
+教學單位|休閒產業經營學系|8551|PDF 第2頁
+管理學院|中心主任 洪福源|8561|PDF 第2頁
+管理學院|國際體育事務碩士學位學程|8501|PDF 第2頁
+管理學院|管理學院碩士在職專班|8603|PDF 第2頁
+通識教育中心|洪福源(代理)|8581|PDF 第2頁
+師資培育中心|林安廸組長|8563|PDF 第2頁
+師資培育中心|綜合業務暨地方教育輔導組|8565|PDF 第2頁
+教授研究室|鍾阮鳳|8552|PDF 第2頁
+教授研究室|謝宜諺|8432|PDF 第2頁
+教授研究室|楊薇玉|8432|PDF 第2頁
+教授研究室|施靜琪|8504|PDF 第2頁
+教授研究室|陳昱嘉|1568|PDF 第2頁
+體適能中心|體適能櫃台|2017|PDF 第2頁
+體適能中心|紓壓室|2019|PDF 第2頁`;
+
+    const $ = (id) => document.getElementById(id);
+    const form = $("recordForm");
+    const body = $("recordBody");
+    const emptyState = $("emptyState");
+    const searchInput = $("searchInput");
+    const departmentFilter = $("departmentFilter");
+
+    let records = loadRecords();
+
+    function seedRecords() {
+      return seedCsv.trim().split("\n").map((line, index) => {
+        const [department, name, phone, source] = line.split("|");
+        return {
+          id: `seed-${index + 1}`,
+          department,
+          name,
+          phone,
+          source,
+          note: ""
+        };
+      });
+    }
+
+    function loadRecords() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        const initial = seedRecords();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+        return initial;
+      }
+      try {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : seedRecords();
+      } catch {
+        return seedRecords();
+      }
+    }
+
+    function saveRecords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    }
+
+    function normalize(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function getFilteredRecords() {
+      const query = normalize(searchInput.value);
+      const dept = departmentFilter.value;
+      return records.filter((record) => {
+        const matchDept = !dept || record.department === dept;
+        const haystack = [record.department, record.name, record.phone, record.source, record.note].join(" ").toLowerCase();
+        return matchDept && (!query || haystack.includes(query));
+      });
+    }
+
+    function getDepartments() {
+      return [...new Set(records.map((record) => record.department).filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
+    }
+
+    function renderFilters() {
+      const current = departmentFilter.value;
+      const departments = getDepartments();
+      departmentFilter.innerHTML = '<option value="">全部單位</option>' + departments.map((department) => (
+        `<option value="${escapeHtml(department)}">${escapeHtml(department)}</option>`
+      )).join("");
+      departmentFilter.value = departments.includes(current) ? current : "";
+      $("departmentOptions").innerHTML = departments.map((department) => (
+        `<option value="${escapeHtml(department)}"></option>`
+      )).join("");
+    }
+
+    function render() {
+      renderFilters();
+      const filtered = getFilteredRecords();
+      $("totalCount").textContent = records.length;
+      $("matchCount").textContent = filtered.length;
+      $("deptCount").textContent = getDepartments().length;
+      emptyState.hidden = filtered.length > 0;
+      body.innerHTML = filtered.map((record) => `
+        <tr>
+          <td><span class="tag" title="${escapeHtml(record.department)}">${escapeHtml(record.department)}</span></td>
+          <td>${escapeHtml(record.name)}</td>
+          <td class="number">${escapeHtml(record.phone)}</td>
+          <td class="muted">${escapeHtml(record.source || "")}</td>
+          <td class="muted">${escapeHtml(record.note || "")}</td>
+          <td>
+            <div class="table-actions">
+              <button class="secondary" type="button" data-action="edit" data-id="${record.id}">修改</button>
+              <button class="danger" type="button" data-action="delete" data-id="${record.id}">刪除</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function resetForm() {
+      form.reset();
+      $("recordId").value = "";
+      $("formTitle").textContent = "新增資料";
+      $("editHint").textContent = "新增模式";
+      $("saveButton").textContent = "新增";
+      $("department").focus();
+    }
+
+    function fillForm(record) {
+      $("recordId").value = record.id;
+      $("department").value = record.department;
+      $("name").value = record.name;
+      $("phone").value = record.phone;
+      $("source").value = record.source || "";
+      $("note").value = record.note || "";
+      $("formTitle").textContent = "修改資料";
+      $("editHint").textContent = `編輯：${record.name}`;
+      $("saveButton").textContent = "儲存修改";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const id = $("recordId").value;
+      const nextRecord = {
+        id: id || `rec-${Date.now()}`,
+        department: $("department").value.trim(),
+        name: $("name").value.trim(),
+        phone: $("phone").value.trim(),
+        source: $("source").value.trim(),
+        note: $("note").value.trim()
+      };
+      if (id) {
+        records = records.map((record) => record.id === id ? nextRecord : record);
+      } else {
+        records = [nextRecord, ...records];
+      }
+      saveRecords();
+      resetForm();
+      render();
+    });
+
+    $("clearButton").addEventListener("click", resetForm);
+
+    $("resetButton").addEventListener("click", () => {
+      if (!confirm("確定要還原 PDF 初始資料？目前新增或修改的資料會被覆蓋。")) return;
+      records = seedRecords();
+      saveRecords();
+      resetForm();
+      render();
+    });
+
+    $("exportButton").addEventListener("click", () => {
+      const blob = new Blob([JSON.stringify(records, null, 2)], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "11504-phone-records.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+
+    body.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const record = records.find((item) => item.id === button.dataset.id);
+      if (!record) return;
+      if (button.dataset.action === "edit") {
+        fillForm(record);
+      }
+      if (button.dataset.action === "delete") {
+        if (!confirm(`確定刪除「${record.name}」？`)) return;
+        records = records.filter((item) => item.id !== record.id);
+        saveRecords();
+        if ($("recordId").value === record.id) resetForm();
+        render();
+      }
+    });
+
+    searchInput.addEventListener("input", render);
+    departmentFilter.addEventListener("change", render);
+
+    render();
+  </script>
+</body>
+</html>
